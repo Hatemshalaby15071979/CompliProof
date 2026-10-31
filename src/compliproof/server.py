@@ -29,9 +29,11 @@ Registration is disabled by default.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
 import os
 import re
+import sqlite3
 import ssl
 import sys
 import sysconfig
@@ -76,12 +78,9 @@ from compliproof.security import (  # noqa: E402
 log = AuditLog(AUDIT_FILE, allow_production=True)
 engine = ReconciliationEngine(log)
 auth = AuthManager(str(WORKSPACE))
-_login_attempts: dict[str, tuple[int, float]] = {}
-_login_attempts_lock = threading.Lock()
 _state_lock = threading.RLock()
 _LOGIN_LIMIT = 5
 _LOGIN_WINDOW_SECONDS = 900
-_LOGIN_ATTEMPT_KEYS_MAX = 10_000
 _ROLE_PERMISSIONS = {
     "owner": {"read", "operate", "admin", "audit"},
     "approver": {"read", "operate", "approve", "audit"},
@@ -403,30 +402,55 @@ def _session_token(handler) -> str:
 
 
 def _valid_login_rate(key: str) -> bool:
-    now = time.monotonic()
-    with _login_attempts_lock:
-        expired = [
-            existing
-            for existing, (_, started) in _login_attempts.items()
-            if now - started >= _LOGIN_WINDOW_SECONDS
-        ]
-        for existing in expired:
-            del _login_attempts[existing]
-        if key not in _login_attempts and len(_login_attempts) >= _LOGIN_ATTEMPT_KEYS_MAX:
-            oldest = min(_login_attempts, key=lambda existing: _login_attempts[existing][1])
-            del _login_attempts[oldest]
-        attempts, started = _login_attempts.get(key, (0, now))
-        if now - started >= _LOGIN_WINDOW_SECONDS:
-            attempts, started = 0, now
+    """Persist login throttling across requests and worker processes.
+
+    Only a digest of the IP/username key is stored. SQLite's immediate write
+    transaction serializes concurrent workers and the file is mode-restricted.
+    """
+    now = time.time()
+    key_hash = hashlib.sha256(key.encode("utf-8")).hexdigest()
+    rate_file = WORKSPACE / "login_attempts.sqlite3"
+    rate_file.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+    with sqlite3.connect(rate_file, timeout=10, isolation_level=None) as db:
+        db.execute("PRAGMA busy_timeout=10000")
+        db.execute(
+            "CREATE TABLE IF NOT EXISTS attempts ("
+            "key_hash TEXT PRIMARY KEY, attempts INTEGER NOT NULL, started REAL NOT NULL)"
+        )
+        db.execute("BEGIN IMMEDIATE")
+        db.execute("DELETE FROM attempts WHERE started <= ?", (now - _LOGIN_WINDOW_SECONDS,))
+        row = db.execute(
+            "SELECT attempts FROM attempts WHERE key_hash = ?", (key_hash,)
+        ).fetchone()
+        attempts = row[0] if row else 0
         if attempts >= _LOGIN_LIMIT:
+            db.execute("COMMIT")
+            os.chmod(rate_file, 0o600)
             return False
-        _login_attempts[key] = (attempts + 1, started)
-        return True
+        if row:
+            db.execute(
+                "UPDATE attempts SET attempts = attempts + 1 WHERE key_hash = ?",
+                (key_hash,),
+            )
+        else:
+            db.execute(
+                "INSERT INTO attempts(key_hash, attempts, started) VALUES (?, 1, ?)",
+                (key_hash, now),
+            )
+        db.execute("COMMIT")
+    os.chmod(rate_file, 0o600)
+    return True
 
 
 def _clear_login_rate(key: str) -> None:
-    with _login_attempts_lock:
-        _login_attempts.pop(key, None)
+    rate_file = WORKSPACE / "login_attempts.sqlite3"
+    if not rate_file.exists():
+        return
+    key_hash = hashlib.sha256(key.encode("utf-8")).hexdigest()
+    with sqlite3.connect(rate_file, timeout=10, isolation_level=None) as db:
+        db.execute("BEGIN IMMEDIATE")
+        db.execute("DELETE FROM attempts WHERE key_hash = ?", (key_hash,))
+        db.execute("COMMIT")
 
 
 def _report_result(task_id: str) -> dict | None:

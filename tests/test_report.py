@@ -1,5 +1,6 @@
 """Tests for the CompliProof report generator."""
 import csv
+import hashlib
 import io
 import json
 import sys
@@ -139,6 +140,59 @@ def test_audit_chain_status_in_report():
         html = gen.generate_reconciliation_report(result)
         assert "OK" in html  # audit chain OK
         assert "ghi789" in html
+
+
+def test_report_is_task_scoped_reproducible_and_audited_for_each_format(tmp_path):
+    audit = AuditLog(tmp_path / "audit.jsonl")
+    audit.append("task.created", "operator", {
+        "task_id": "r-report-scope", "note": "belongs to this task"
+    })
+    audit.append("task.created", "operator", {
+        "task_id": "r-other-task", "note": "must not leak"
+    })
+    generator = ReportGenerator(audit)
+    result = {
+        "task_id": "r-report-scope",
+        "correlation_id": "c-report-scope",
+        "source_a": "SYNTHETIC_a.csv",
+        "source_b": "SYNTHETIC_b.csv",
+        "key_column": "id",
+        "timestamp": "2026-10-31T00:00:00+00:00",
+        "total_a": 1,
+        "total_b": 1,
+        "matched": 1,
+        "only_in_a": 0,
+        "only_in_b": 0,
+        "mismatched": 0,
+        "match_rate": 1.0,
+        "discrepancy_rate": 0.0,
+        "matched_rows": [{
+            "key": "SYN-001",
+            "row_a": {"id": "SYN-001", "value": "synthetic-only"},
+            "row_b": {"id": "SYN-001", "value": "synthetic-only"},
+        }],
+        "only_in_a_rows": [],
+        "only_in_b_rows": [],
+        "mismatched_rows": [],
+        "evidence_pack": {"task_id": "r-report-scope", "sealed_hash": "local-hash"},
+    }
+
+    html_one = generator.generate_reconciliation_report(result).encode()
+    html_two = generator.generate_reconciliation_report(result).encode()
+    pdf = generator.to_pdf(result)
+    csv_bytes = generator.to_csv(result).encode()
+    assert html_one == html_two
+    assert b"Task Audit Events (1 events, task-specific)" in html_one
+    assert b"task.created" in html_one
+    assert b"r-other-task" not in html_one
+    assert b"100.0%" in html_one
+    assert b"SYN-001" in html_one and b"synthetic-only" in html_one
+
+    generated = [event for event in audit.tail(100) if event["type"] == "report.generated"]
+    assert [event["payload"]["format"] for event in generated] == ["html", "html", "pdf", "csv"]
+    for event, content in zip(generated, (html_one, html_two, pdf, csv_bytes), strict=True):
+        assert event["payload"]["task_id"] == "r-report-scope"
+        assert event["payload"]["report_sha256"] == hashlib.sha256(content).hexdigest()
 
 
 def test_persisted_result_is_private_and_expires_after_30_days(tmp_path):

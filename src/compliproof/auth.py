@@ -20,7 +20,8 @@ import bcrypt
 
 ROLES = {"owner", "approver", "operator", "auditor", "viewer"}
 MFA_ROLES = {"owner", "approver"}
-PASSWORD_HASH_PREFIX = "bcrypt$"  # noqa: S105
+# Storage marker for a password hash, not a usable password.
+PASSWORD_HASH_PREFIX = "bcrypt$"  # noqa: S105  # nosec B105
 
 
 def generate_totp_secret() -> str:

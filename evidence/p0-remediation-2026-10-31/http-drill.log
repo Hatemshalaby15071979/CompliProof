@@ -1,0 +1,2 @@
+PASS: Secure-cookie login, auth boundary, CSRF-protected synthetic reconciliation, 100% HTML, PDF/CSV source values, logout revocation
+SIMULATED DATA: SYN-001/SYN-002, synthetic-alpha/synthetic-beta; no customer data used

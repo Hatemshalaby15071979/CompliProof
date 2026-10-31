@@ -1,0 +1,112 @@
+DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+            Install the buildx component to build images with BuildKit:
+            https://docs.docker.com/go/buildx/
+
+Sending build context to Docker daemon  631.3kB
+Step 1/17 : FROM python:3.11-slim
+ ---> cce12316475d
+Step 2/17 : WORKDIR /app
+ ---> Using cache
+ ---> 6d23ae39e13e
+Step 3/17 : RUN apt-get update && apt-get install -y --no-install-recommends     gcc     && rm -rf /var/lib/apt/lists/*
+ ---> Using cache
+ ---> 73a791480a0e
+Step 4/17 : COPY pyproject.toml .
+ ---> Using cache
+ ---> 3ed279c2a658
+Step 5/17 : COPY README.md .
+ ---> Using cache
+ ---> 83606ee860e0
+Step 6/17 : COPY requirements.lock.txt .
+ ---> Using cache
+ ---> 7bd753c20485
+Step 7/17 : COPY src/ ./src/
+ ---> b8844288a4b5
+Step 8/17 : COPY dashboard/ ./dashboard/
+ ---> 80f9bfc8c767
+Step 9/17 : RUN pip install --no-cache-dir setuptools==78.1.1 wheel==0.46.3 -r requirements.lock.txt     && pip install --no-cache-dir --no-build-isolation --no-deps .
+ ---> Running in 84aadd35650f
+Collecting setuptools==78.1.1
+  Downloading setuptools-78.1.1-py3-none-any.whl.metadata (6.5 kB)
+Requirement already satisfied: wheel==0.46.3 in /usr/local/lib/python3.11/site-packages (0.46.3)
+Collecting reportlab==5.0.1 (from -r requirements.lock.txt (line 3))
+  Downloading reportlab-5.0.1-py3-none-any.whl.metadata (1.6 kB)
+Collecting pillow==13.0.0 (from -r requirements.lock.txt (line 4))
+  Downloading pillow-13.0.0-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl.metadata (9.1 kB)
+Collecting charset-normalizer==3.5.2 (from -r requirements.lock.txt (line 5))
+  Downloading charset_normalizer-3.5.2-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl.metadata (46 kB)
+     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 46.4/46.4 kB 672.4 kB/s eta 0:00:00
+Collecting bcrypt==5.0.0 (from -r requirements.lock.txt (line 6))
+  Downloading bcrypt-5.0.0-cp39-abi3-manylinux_2_34_x86_64.whl.metadata (10 kB)
+Requirement already satisfied: packaging>=24.0 in /usr/local/lib/python3.11/site-packages (from wheel==0.46.3) (26.3)
+Downloading setuptools-78.1.1-py3-none-any.whl (1.3 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 1.3/1.3 MB 3.8 MB/s eta 0:00:00
+Downloading reportlab-5.0.1-py3-none-any.whl (2.0 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 2.0/2.0 MB 4.7 MB/s eta 0:00:00
+Downloading pillow-13.0.0-cp311-cp311-manylinux_2_27_x86_64.manylinux_2_28_x86_64.whl (7.1 MB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 7.1/7.1 MB 4.4 MB/s eta 0:00:00
+Downloading charset_normalizer-3.5.2-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl (269 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 270.0/270.0 kB 2.7 MB/s eta 0:00:00
+Downloading bcrypt-5.0.0-cp39-abi3-manylinux_2_34_x86_64.whl (278 kB)
+   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 278.2/278.2 kB 2.7 MB/s eta 0:00:00
+Installing collected packages: setuptools, pillow, charset-normalizer, bcrypt, reportlab
+  Attempting uninstall: setuptools
+    Found existing installation: setuptools 79.0.1
+    Uninstalling setuptools-79.0.1:
+      Successfully uninstalled setuptools-79.0.1
+Successfully installed bcrypt-5.0.0 charset-normalizer-3.5.2 pillow-13.0.0 reportlab-5.0.1 setuptools-78.1.1
+[91mWARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+[0m[91m
+[notice] A new release of pip is available: 24.0 -> 26.2.2
+[notice] To update, run: pip install --upgrade pip
+[0mProcessing /app
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: compliproof
+  Building wheel for compliproof (pyproject.toml): started
+  Building wheel for compliproof (pyproject.toml): finished with status 'done'
+  Created wheel for compliproof: filename=compliproof-0.1.0-py3-none-any.whl size=56957 sha256=0e49d374fa3aa7226b19a4bb61fd41b83bbc978f55eb0918cc3fab706ff4bf6e
+  Stored in directory: /tmp/pip-ephem-wheel-cache-bhw0d4eq/wheels/57/0f/98/bb57b2b57b95807699b822a35c022f139d38a02c27922f27ce
+Successfully built compliproof
+Installing collected packages: compliproof
+Successfully installed compliproof-0.1.0
+[91mWARNING: Running pip as the 'root' user can result in broken permissions and conflicting behaviour with the system package manager. It is recommended to use a virtual environment instead: https://pip.pypa.io/warnings/venv
+[0m[91m
+[notice] A new release of pip is available: 24.0 -> 26.2.2
+[notice] To update, run: pip install --upgrade pip
+[0m ---> Removed intermediate container 84aadd35650f
+ ---> c123c926597e
+Step 10/17 : RUN mkdir -p /app/workspace /app/workspace/reconciliations /app/workspace/reports /app/workspace/kb     && groupadd -r compliproof && useradd -r -g compliproof compliproof     && chown -R compliproof:compliproof /app/workspace
+ ---> Running in 80516eb36c88
+ ---> Removed intermediate container 80516eb36c88
+ ---> dff899bfae21
+Step 11/17 : USER compliproof
+ ---> Running in 8ceffe0459be
+ ---> Removed intermediate container 8ceffe0459be
+ ---> a6d23beeba5f
+Step 12/17 : ENV PYTHONUNBUFFERED=1
+ ---> Running in 9680d38594a2
+ ---> Removed intermediate container 9680d38594a2
+ ---> 1b547b577ddf
+Step 13/17 : ENV COMPLIPROOF_WORKSPACE=/app/workspace
+ ---> Running in 4d4de046e6b9
+ ---> Removed intermediate container 4d4de046e6b9
+ ---> cc5f22fefb1c
+Step 14/17 : ENV COMPLIPROOF_SECURE_COOKIES=1
+ ---> Running in 8cf0d948d439
+ ---> Removed intermediate container 8cf0d948d439
+ ---> 992f7e8fd5b7
+Step 15/17 : EXPOSE 8200
+ ---> Running in 50e8d956a549
+ ---> Removed intermediate container 50e8d956a549
+ ---> cab772464abf
+Step 16/17 : HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3   CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8200/api/healthz', timeout=5)" || exit 1
+ ---> Running in 0e89f4b1965d
+ ---> Removed intermediate container 0e89f4b1965d
+ ---> 0ed4cd3eeeef
+Step 17/17 : CMD ["python", "-m", "compliproof.server", "--host", "0.0.0.0", "--port", "8200"]
+ ---> Running in c0fe8d4fd8cf
+ ---> Removed intermediate container c0fe8d4fd8cf
+ ---> 549868f799df
+Successfully built 549868f799df
+Successfully tagged compliproof:p0-drill-20261031

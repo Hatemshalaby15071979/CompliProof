@@ -168,10 +168,13 @@ class AuditLog:
                 except (ImportError, OSError):
                     have_fcntl = False
                 try:
-                    prev = self._last_hash()
-                    if prev == BROKEN:
-                        raise IOError("Audit chain is broken — refusing to append")
-                    entry["seq"] = self._next_seq()
+                    chain = verify_ledger(self.path)
+                    if not chain["ok"]:
+                        raise IOError(
+                            f"Audit chain is broken ({chain['reason']}) — refusing to append"
+                        )
+                    prev = chain["head"]
+                    entry["seq"] = chain["count"] + 1
                     entry["prev_hash"] = prev
                     entry["hash"] = _hash_entry(_strip_hash(entry), prev)
                     line = json.dumps(entry, ensure_ascii=False)
@@ -384,7 +387,7 @@ def _tsa_timestamp(head_hash: str, count: int) -> str:
     except ImportError:
         pass
     data = _build_tsq(bytes.fromhex(head_hash), nonce)
-    req = urllib.request.Request(
+    req = urllib.request.Request(  # noqa: S310 - opened through strict HTTP(S)-only helper
         url,
         data=data,
         headers={"Content-Type": "application/timestamp-query"},

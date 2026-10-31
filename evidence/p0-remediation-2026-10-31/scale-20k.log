@@ -1,0 +1,8 @@
+Synthetic-only reconciliation scale smoke
+Command: PYTHONPATH=src python3 <temporary inline harness>
+Inputs: two generated CSV files, 20,000 rows each; id, amount, and note fields
+Result: SYNTHETIC ONLY; rows_per_input=20000; result=20000/20000; match_rate=1.0000; elapsed_seconds=0.938; traced_peak_mib=24.99; output_rows=20000; audit_chain_valid=True
+
+This bounded run demonstrates behavior for this fixture size only. It does not establish
+production capacity, maximum supported file size, interruption recovery, or a customer
+environment performance guarantee.

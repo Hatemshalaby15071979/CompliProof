@@ -13,9 +13,11 @@ and CSV reports with a local evidence pack and hash-chained audit events.
 The local candidate includes bcrypt password hashes, TOTP for owner/approver accounts, hashed
 12-hour sessions, CSRF checks, role-based route permissions, an authenticated dashboard, bounded
 JSON requests, fail-closed state reads, task-scoped report routes, row-level report persistence,
-and a 30-day result-retention policy. The report file's SHA-256 is recorded in the local audit
-ledger and checked before it is served. Uploaded CSV files are temporary and removed after
-reconciliation.
+file-backed login throttling, and a 30-day result-retention policy. Reconciliation records a
+durable intent before reading inputs, rejects duplicate or empty keys, and sorts result sections
+for repeatable output. The evidence-pack manifest includes approval and can detect field drift
+against its local hash. The report file's SHA-256 is recorded in the local audit ledger and checked
+before it is served. Uploaded CSV files are temporary and removed after reconciliation.
 
 These are implementation facts, not a production-readiness declaration. The authoritative
 register remains [`../company-os/stage-0/P0_REGISTER.yaml`](../company-os/stage-0/P0_REGISTER.yaml):
@@ -29,14 +31,16 @@ There is no approved customer deployment, no production dataset, and no external
   no verified external anchor or key lifecycle is established.
 - **Operations:** backup/restore, upgrade/migration, rollback, monitoring, incident response,
   capacity, and customer-side retention/backups have not passed operational drills.
-- **Authentication operations:** login throttling is in-memory and per process; privileged TOTP
-  secrets are stored in the private workspace; account recovery, credential rotation, and
-  multi-process session coordination are not implemented.
+- **Authentication operations:** login throttling now stores hashed IP/username keys in a
+  mode-restricted SQLite file and is coordinated across processes. Privileged TOTP secrets are
+  stored in the private workspace; account recovery, credential rotation, encrypted TOTP key
+  operations, and multi-process session coordination are not implemented.
 - **Deployment/supply chain:** local builds do not prove CI, hash-locked dependencies, a
   digest-pinned base image, or a customer environment. The included CI workflow has not been
   executed from GitHub in this local-only workflow.
-- **Reconciliation scope:** duplicate/missing keys, very large files, recovery after interruption,
-  and complete CLI/server report parity still need registered acceptance evidence.
+- **Reconciliation scope:** duplicate/empty key handling now fails explicitly, and a regression
+  compares CLI and served HTML byte-for-byte for the same stored task. Very large files and
+  recovery after interruption still need registered acceptance evidence.
 - **Data protection:** row-level reports remain on disk for 30 days. Files are mode-restricted,
   but filesystem encryption, backup expiry, and deletion from external backups are the
   operator's responsibility.

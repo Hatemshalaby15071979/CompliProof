@@ -1,0 +1,11 @@
+usage: compliproof-server [-h] [--port PORT] [--host HOST]
+                          [--allow-registration]
+
+CompliProof Business OS backend
+
+options:
+  -h, --help            show this help message and exit
+  --port PORT
+  --host HOST
+  --allow-registration  explicitly allow public account registration (local
+                        bootstrap only)

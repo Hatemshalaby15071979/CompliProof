@@ -89,6 +89,7 @@ def test_seal_manifest_enumerates_material_fields():
         approval={"approver_id": "owner"},
     )
     pack.seal()
+    assert tuple(pack._seal_payload()) == pack.SEAL_MANIFEST
 
     # Recompute the expected hash independently to confirm the manifest covers
     # all fields including approval.
@@ -110,6 +111,34 @@ def test_seal_manifest_enumerates_material_fields():
         ).encode("utf-8")
     ).hexdigest()
     assert pack.sealed_hash == expected
+    assert pack.verify() is True
+
+
+@pytest.mark.parametrize(
+    ("field", "changed"),
+    [
+        ("approval", {"approver_id": "other-owner", "decision": "approve"}),
+        ("steps", [{"step": "reconcile", "artifact_sha256": "tampered"}]),
+        ("evidence_summary", {"matched": 999}),
+        ("timestamp", "2026-10-30T00:00:00+00:00"),
+    ],
+)
+def test_evidence_pack_verify_rejects_field_tampering(field, changed):
+    pack = EvidencePack(
+        task_id="r-tamper",
+        correlation_id="c-tamper",
+        actor_id="operator",
+        final_state="reconciled",
+        steps=[{"step": "reconcile", "artifact_sha256": "original"}],
+        approval={"approver_id": "owner", "decision": "approve"},
+        evidence_summary={"matched": 2},
+        kpi_summary={"match_rate": 1.0},
+        timestamp="2026-10-31T00:00:00+00:00",
+    )
+    pack.seal()
+    assert pack.verify() is True
+    setattr(pack, field, changed)
+    assert pack.verify() is False
 
 
 # ── SealedAnswerKeyStore HMAC verification ─────────────────────────────────

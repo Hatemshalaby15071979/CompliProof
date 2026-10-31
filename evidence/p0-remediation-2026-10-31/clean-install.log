@@ -1,0 +1,8 @@
+WARNING: The directory '[LOCAL_HOME]/.cache/pip' or its parent directory is not owned or is not writable by the current user. The cache has been disabled. Check the permissions and owner of that directory. If executing pip with sudo, you should use sudo's -H flag.
+Processing ./evidence/p0-remediation-2026-10-31/compliproof-0.1.0-py3-none-any.whl
+Installing collected packages: compliproof
+  Attempting uninstall: compliproof
+    Found existing installation: compliproof 0.1.0
+    Uninstalling compliproof-0.1.0:
+      Successfully uninstalled compliproof-0.1.0
+Successfully installed compliproof-0.1.0

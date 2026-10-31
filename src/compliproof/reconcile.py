@@ -2,9 +2,9 @@
 """CSV-to-CSV reconciliation engine for the CompliProof prototype.
 
 Matches two CSV exports by a key column on the happy path and returns counts,
-row classifications, and a local evidence-pack hash. Duplicate keys, missing
-keys, ordering, and large-file behavior are not production-safe. The report
-and evidence pack are not audit-grade.
+row classifications, and a local evidence-pack hash. Duplicate and empty keys
+are rejected; result rows are sorted by key. Large-file behavior is not yet
+validated, and the report and evidence pack are not audit-grade.
 
 Usage:
     from compliproof.audit import AuditLog
@@ -116,12 +116,27 @@ class ReconciliationEngine:
 
         Returns a ReconciliationResult with matched/only_in_a/only_in_b/
         mismatched rows and builds a locally hashed EvidencePack. The hash is
-        not externally anchored and does not cover approval.
+        not externally anchored.
         """
         task_id = task_id or f"r-{uuid.uuid4().hex[:8]}"
         correlation_id = correlation_id or f"c-{uuid.uuid4().hex[:8]}"
         source_a_label = source_a_label or str(source_a)
         source_b_label = source_b_label or str(source_b)
+
+        # Persist the action intent before opening or processing either file.
+        # If the process stops during reconciliation, the pending intent remains
+        # available for an operator to investigate.
+        intent = self.audit.append_intent(
+            "reconciliation",
+            actor_id,
+            {
+                "task_id": task_id,
+                "correlation_id": correlation_id,
+                "source_a": source_a_label,
+                "source_b": source_b_label,
+                "key_column": key_column,
+            },
+        )
 
         rows_a = _load_csv(source_a)
         rows_b = _load_csv(source_b)
@@ -129,12 +144,20 @@ class ReconciliationEngine:
         # Index by key column
         index_a: dict[str, dict] = {}
         for row in rows_a:
-            key = row.get(key_column, "")
+            key = row.get(key_column, "").strip()
+            if not key:
+                raise ValueError(f"source A contains an empty reconciliation key in {key_column!r}")
+            if key in index_a:
+                raise ValueError(f"source A contains duplicate reconciliation key {key!r}")
             index_a[key] = row
 
         index_b: dict[str, dict] = {}
         for row in rows_b:
-            key = row.get(key_column, "")
+            key = row.get(key_column, "").strip()
+            if not key:
+                raise ValueError(f"source B contains an empty reconciliation key in {key_column!r}")
+            if key in index_b:
+                raise ValueError(f"source B contains duplicate reconciliation key {key!r}")
             index_b[key] = row
 
         keys_a = set(index_a.keys())
@@ -146,7 +169,7 @@ class ReconciliationEngine:
 
         matched_rows = []
         mismatched_rows = []
-        for key in matched_keys:
+        for key in sorted(matched_keys):
             row_a = index_a[key]
             row_b = index_b[key]
             hash_a = _row_hash(row_a)
@@ -173,13 +196,13 @@ class ReconciliationEngine:
 
         only_in_a_rows = [
             {"key": key, "row": index_a[key], "row_hash": _row_hash(index_a[key])}
-            for key in only_a_keys
+            for key in sorted(only_a_keys)
         ]
         only_in_b_rows = [
             {"key": key, "row": index_b[key], "row_hash": _row_hash(index_b[key])}
-            for key in only_b_keys
+            for key in sorted(only_b_keys)
         ]
-        match_rate = round(len(matched_rows) / max(len(rows_a), 1), 4)
+        match_rate = round(len(matched_rows) / max(len(rows_a), len(rows_b), 1), 4)
         discrepancy_rate = round(
             (len(only_in_a_rows) + len(only_in_b_rows) + len(mismatched_rows))
             / max(len(rows_a) + len(rows_b), 1),
@@ -262,7 +285,8 @@ class ReconciliationEngine:
         result.evidence_pack = pack.to_dict()
 
         # Log to audit chain
-        self.audit.append(
+        self.audit.append_result(
+            intent,
             "reconciliation.completed",
             actor_id,
             {

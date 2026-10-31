@@ -21,16 +21,18 @@ not customer-market evidence. Do not label them otherwise.
 
 | Area | Implemented in the local candidate | Still required for registered closure |
 |---|---|---|
-| P0-1 Packaging/deployment | Correct package discovery, pinned runtime dependencies, wheel/CLI/container paths | Fresh clean install/build evidence, CI evidence, digest/hash reproducibility, backup/restore, migration/rollback, operator runbook, Owner signature |
-| P0-2 Evidence integrity | Existing local seals and tamper tests; reconciliation result-file digest is linked to the local ledger | Asymmetric signature/key lifecycle, independent verifier evidence, complete seal-manifest tests, Owner signature |
-| P0-3 Audit | Shared workspace ledger, thread/process locking in the ledger, local verification and anchor mechanisms | Verified external anchor receipt, canonical-ledger inventory, full registered pre-action and independent-verifier evidence, Owner signature |
-| P0-4 Reports/reconciliation | Persisted full results, task-scoped HTML/PDF/CSV route data, 30-day result retention, CSV formula escaping | Complete golden acceptance matrix, CLI/server parity evidence, duplicate/missing-key and large-file behavior, interruption/recovery, Owner signature |
-| P0-5 Report access | Session authentication, role checks, CSRF for mutations, report-format route tests | Full route/security scan, supported TLS proxy deployment, Owner signature |
-| P0-6 Authentication | bcrypt, privileged-role TOTP, hashed 12-hour sessions, RBAC, CSRF, local rate limit | Persistent throttling, encrypted TOTP secret/key operations, account recovery/offboarding, multi-process coordination, complete registered evidence, Owner signature |
-| P0-7 Dashboard/routes | Login/logout, role-aware controls, authenticated application routes, minimal health endpoint | Browser-level acceptance, customer deployment verification, complete registered evidence, Owner signature |
+| P0-1 Packaging/deployment | Local wheel build, clean-venv install and CLI smoke passed; final Docker image built and ran non-root; synthetic backup restored and served by the final image | GitHub Actions run, versioned operator runbook, migration rehearsal, supported TLS proxy deployment, rollback to a pre-upgrade snapshot, Owner signature |
+| P0-2 Evidence integrity | Approval is in the explicit seal manifest; local verification detects approval, artifact, and metadata changes; answer-key tamper tests pass | Asymmetric signatures/key lifecycle, external independent review, trust model for the local HMAC key, Owner signature |
+| P0-3 Audit | Reconciliation intent is durable before file reads; completion links to intent; append verifies the chain; concurrent append, local anchor, and test-isolation checks pass | Pre-action events for every consequential operation, verified external timestamp/anchor receipt, independent review, Owner signature |
+| P0-4 Reports/reconciliation | Stable sorted report rows, explicit duplicate/empty-key rejection, 100% synthetic perfect match, task-only report events, audited HTML/PDF/CSV, byte-identical CLI/server HTML regression; injected input interruption leaves a valid pending intent; 20,000 synthetic rows per input completed in 0.938 s | Production capacity/file-size limits, interruption recovery/resume matrix, remaining complete golden matrix, Owner signature |
+| P0-5 Report access | Authenticated report routes, role checks, CSRF, cookie/header tests, current Bandit and Ruff scans pass; basic browser login/logout smoke passes | Full browser-level route acceptance, TLS proxy deployment verification, external security review, Owner signature |
+| P0-6 Authentication | bcrypt, privileged-role TOTP, hashed 12-hour sessions, RBAC, CSRF, persistent hashed-key login throttling; lockout survived a local container restart | Encrypted TOTP key operations, account recovery/offboarding, multi-process session coordination, external security review, Owner signature |
+| P0-7 Dashboard/routes | Login/logout controls and simulated-data labeling are present; HTTP login/logout and route inventory tests pass; integrated browser smoke passed for a synthetic viewer, restricted finance/pipeline panels, and logout revocation | Browser acceptance for every role and customer deployment verification, Owner signature |
 
-These are not formal P0 closures. The authoritative register currently remains at **7 open / 0
-closed**.
+These are not formal P0 closures. The authoritative register remains at **7 open / 0 closed**.
+Exact commands, results, synthetic-data labels, and negative recovery findings are in
+[`P0_REMEDIATION_EXECUTION_2026-10-31.md`](./P0_REMEDIATION_EXECUTION_2026-10-31.md) and the
+attached evidence directory.
 
 ## Required verification sequence
 

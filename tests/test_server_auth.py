@@ -32,8 +32,6 @@ def _totp(secret: str) -> str:
 
 @pytest.fixture
 def app(tmp_path, monkeypatch):
-    with server._login_attempts_lock:
-        server._login_attempts.clear()
     workspace = tmp_path / "workspace"
     manager = AuthManager(str(workspace))
     secret = generate_totp_secret()
@@ -191,6 +189,22 @@ def test_login_rate_limit_rejects_repeated_failures(app):
     assert status == 429
 
 
+def test_login_rate_limit_persists_hashed_key_across_manager_calls(app):
+    _, _, _ = app
+    key = "127.0.0.1:synthetic-account"
+    assert all(server._valid_login_rate(key) for _ in range(server._LOGIN_LIMIT))
+    assert server._valid_login_rate(key) is False
+
+    store = Path(server.WORKSPACE) / "login_attempts.sqlite3"
+    assert store.exists()
+    assert store.stat().st_mode & 0o777 == 0o600
+    contents = store.read_bytes()
+    assert b"127.0.0.1" not in contents
+    assert b"synthetic-account" not in contents
+    # A separate call reopens the on-disk store, mirroring a process restart.
+    assert server._valid_login_rate(key) is False
+
+
 def test_nonloopback_bind_requires_secure_cookie_configuration(monkeypatch):
     monkeypatch.delenv("COMPLIPROOF_SECURE_COOKIES", raising=False)
     monkeypatch.setattr(
@@ -333,7 +347,7 @@ def test_chat_uses_parsed_body_and_rejects_system_role_history(app, monkeypatch)
     assert status == 400
 
 
-def test_reconcile_uploads_are_temporary_and_audited_as_the_user(app):
+def test_reconcile_uploads_are_temporary_and_audited_as_the_user(app, tmp_path, monkeypatch):
     base, _, _ = app
     status, headers, login_data = _login(base, "operator")
     assert status == 200
@@ -361,6 +375,7 @@ def test_reconcile_uploads_are_temporary_and_audited_as_the_user(app):
     assert not list(Path(server.WORKSPACE).glob("upload_*.csv"))
     event = server.log.tail(1)[0]
     assert event["actor"] == login_data["user"]["id"]
+    served_html = None
     for suffix, mime in (("", "text/html"), ("/pdf", "application/pdf"), ("/csv", "text/csv")):
         status, headers, report = _request(
             base, f"/api/report/{result['task_id']}{suffix}", cookie=cookie
@@ -369,8 +384,24 @@ def test_reconcile_uploads_are_temporary_and_audited_as_the_user(app):
         assert report
         if suffix == "":
             assert b"Matched Rows" in report and b"ok" in report
+            assert b"Evidence Pack (prototype)" in report
+            assert result["evidence_pack"]["sealed_hash"].encode() in report
+            served_html = report
         if suffix == "/csv":
             assert b"ok" in report
+
+    # The CLI and web route both read the same persisted task result and use
+    # the same renderer, so their reproducible HTML bytes must match exactly.
+    from compliproof import cli
+    cli_output = tmp_path / "cli-report.html"
+    monkeypatch.setenv("COMPLIPROOF_WORKSPACE", str(server.WORKSPACE))
+    monkeypatch.setattr(
+        cli.sys,
+        "argv",
+        ["compliproof", "report", result["task_id"], "--output", str(cli_output)],
+    )
+    assert cli.main() == 0
+    assert cli_output.read_bytes() == served_html
 
 
 def test_corrupt_task_store_fails_closed(app):

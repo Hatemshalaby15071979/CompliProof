@@ -67,7 +67,24 @@ class ScoringResult:
 
 @dataclass
 class EvidencePack:
-    """Exportable evidence pack for a reconciliation task; the hash is local and does not cover approval."""
+    """Exportable task pack with a local SHA-256 integrity check.
+
+    The digest is not a digital signature: a party able to change the pack can
+    also recompute it. External trust and independent verification remain
+    separate requirements.
+    """
+
+    SEAL_MANIFEST = (
+        "task_id",
+        "correlation_id",
+        "actor_id",
+        "final_state",
+        "steps",
+        "approval",
+        "evidence_summary",
+        "kpi_summary",
+        "timestamp",
+    )
 
     task_id: str
     correlation_id: str
@@ -80,26 +97,40 @@ class EvidencePack:
     sealed_hash: str = ""
     timestamp: str = field(default_factory=_now)
 
+    def _seal_payload(self) -> dict:
+        """Return the canonical field manifest covered by the local digest."""
+        return {
+            "task_id": self.task_id,
+            "correlation_id": self.correlation_id,
+            "actor_id": self.actor_id,
+            "final_state": self.final_state,
+            "steps": self.steps,
+            "approval": self.approval,
+            "evidence_summary": self.evidence_summary,
+            "kpi_summary": self.kpi_summary,
+            "timestamp": self.timestamp,
+        }
+
     def seal(self) -> str:
-        """Seal the pack. The payload includes approval so that changing
-        approval changes the sealed hash."""
+        """Hash all manifest fields, including approval, with local SHA-256."""
         payload = json.dumps(
-            {
-                "task_id": self.task_id,
-                "correlation_id": self.correlation_id,
-                "actor_id": self.actor_id,
-                "final_state": self.final_state,
-                "steps": self.steps,
-                "approval": self.approval,
-                "evidence_summary": self.evidence_summary,
-                "kpi_summary": self.kpi_summary,
-                "timestamp": self.timestamp,
-            },
+            self._seal_payload(),
             sort_keys=True,
             separators=(",", ":"),
         )
         self.sealed_hash = hashlib.sha256(payload.encode("utf-8")).hexdigest()
         return self.sealed_hash
+
+    def verify(self) -> bool:
+        """Check the persisted digest against every field in the manifest."""
+        expected = hashlib.sha256(
+            json.dumps(
+                self._seal_payload(),
+                sort_keys=True,
+                separators=(",", ":"),
+            ).encode("utf-8")
+        ).hexdigest()
+        return bool(self.sealed_hash and hmac.compare_digest(self.sealed_hash, expected))
 
     def to_dict(self) -> dict:
         return {

@@ -41,6 +41,7 @@ htmlcov/
 workspace/*.jsonl
 workspace/sessions.json
 workspace/*.csv
+/evidence/p0-remediation-2026-10-31/synthetic-workspace-backup.tar.gz
 
 # IDE / OS
 .idea/

@@ -75,9 +75,11 @@ prove immutability against a host administrator.
 
 The server and CLI now persist full row-level results so reports can be regenerated; those results
 expire after 30 days. Focused tests cover served HTML/PDF/CSV, result-file tampering, retention,
-and formula escaping. The registered gate still needs its complete golden acceptance evidence,
-including CLI/server parity and reconciliation edge cases such as duplicate/missing keys, large
-files, and interruption/recovery.
+formula escaping, CLI/server parity, and duplicate/empty-key rejection. An injected input-read
+interruption leaves a valid pending intent rather than a false completion. A bounded synthetic run
+reconciled 20,000 rows per input in 0.938 seconds with 24.99 MiB peak traced Python allocations.
+That run does not establish a production capacity limit; larger-scale capacity and interruption
+recovery/resume are still unproven.
 
 ### P0-5 — Server reporting
 
@@ -90,17 +92,19 @@ independently signed off.
 ### P0-6 — Authentication
 
 The local implementation now has bcrypt, TOTP for privileged roles, hashed sessions, expiry,
-CSRF, and role checks. Login throttling is in-memory and per process, not persistent across
-restarts or multiple server processes. TOTP secrets are stored in the private workspace rather
-than encrypted with a managed key. Password reset/recovery, account suspension/offboarding,
-role lifecycle, and multi-process session coordination are not implemented.
+CSRF, role checks, and persistent login throttling. The lockout drill verified that five failures
+followed by a container restart still resulted in HTTP 429 for the same synthetic account.
+TOTP secrets are stored in the private workspace rather than encrypted with a managed key.
+Password reset/recovery, account suspension/offboarding, role lifecycle, and multi-process session
+coordination are not implemented.
 
 ### P0-7 — Dashboard and route surface
 
-The dashboard login and role-aware controls are implemented and tested through HTTP-level
-regressions. A minimal public health endpoint and the static login shell remain intentionally
-reachable. Browser-level acceptance, proxy/TLS deployment, and the complete registered security
-evidence are not established by the HTTP tests.
+The dashboard login and role-aware controls are covered by HTTP-level regressions. An integrated
+browser smoke also verified the sign-in form, synthetic viewer login, simulated-data banner,
+owner-only finance/pipeline restrictions, logout, and post-logout HTTP 401. This covers the viewer
+flow only; role-by-role browser acceptance and customer deployment are not established. A minimal
+public health endpoint and the static login shell remain intentionally reachable.
 
 ## Data-protection boundary
 
@@ -120,17 +124,18 @@ Commands completed against this candidate:
 
 | Check | Result |
 |---|---|
-| `COMPLIPROOF_WORKSPACE=/tmp/compliproof-final-tests-a9f5 python3 -m pytest tests -q` | **75 passed** |
-| Ruff on changed Python source/tests | **Clean** |
-| Repository-wide `ruff check .` | **16 findings remain** in pre-existing, untouched files (`scripts/remediate.py`, `src/compliproof/audit.py`, `email.py`, `gate.py`, `tests/test_audit.py`, `tests/test_audit_p0_3.py`) |
-| Wheel build via `python3 -m pip wheel . --no-deps --no-build-isolation` | **Succeeded**; wheel SHA-256 `b2728e19b36bbd579a2aa278953a7273e99992a37c1f5c84f5131dfa5d736a4e` |
-| Clean Python 3.14 virtualenv install from `requirements.lock.txt`, both CLI `--help` commands, installed dashboard asset | **Passed** |
+| `COMPLIPROOF_WORKSPACE=/tmp/compliproof-p0-continue-final-20261031 PYTHONPATH=src python3 -m pytest tests -q` | **85 passed** |
+| Ruff on remediated Python source/tests | **Clean** |
+| Repository-wide `ruff check .` | **12 findings remain** outside the remediated paths, in `scripts/remediate.py`, `src/compliproof/email.py`, `src/compliproof/gate.py`, and `tests/test_audit.py` |
+| Two P0-candidate wheel builds with `SOURCE_DATE_EPOCH=1793438580` | **Byte-identical**; SHA-256 `87d767d91e7e534a1c351f4edd3777c89fc71d3c4e75897f14327e018e70b741` |
+| Clean virtualenv install of the P0 wheel; both CLI `--help` commands | **Passed** |
 | Clean venv `pip check` | **No broken requirements** |
-| Docker build with `--no-cache --pull=false` | **Succeeded**; the base image was not pulled or digest-pinned |
-| Container smoke | **Passed**: health endpoint and login page responded; configured user is `compliproof` |
-| Browser check | **Passed**: temporary operator could log in/out; finance/pipeline were restricted in the dashboard |
+| Docker build and synthetic HTTP drill | **Passed**: non-root UID/GID 999, healthy loopback container, auth and report requests passed; base remains floating and was not pulled or digest-pinned |
+| Container backup/restore | **Passed locally with synthetic state**: restored workspace served saved reports; downgrade to the older salted-SHA256 version failed login against bcrypt records |
+| Browser check | **Partial pass**: synthetic viewer login/logout worked; simulated banner and restricted finance/pipeline panels displayed; post-logout `/api/auth/me` returned 401. Other roles were not browser-tested. |
 | CI secret-pattern scan on `src`, `tests`, and `dashboard` | **No configured patterns found** |
-| Bandit and pip-audit | **Not run**; executables were unavailable |
+| Bandit | **Passed**: zero findings in the saved P0 execution scan |
+| pip-audit | **Not run**: executable unavailable in the current environment |
 | Hosted GitHub CI | **Not run**; no remote is configured |
 
 These are local engineering checks, not P0 closure evidence. The test interpreter was Python 3.14;

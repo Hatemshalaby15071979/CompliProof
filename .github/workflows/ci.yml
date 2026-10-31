@@ -30,6 +30,9 @@ jobs:
       - name: Run test suite
         run: python -m pytest tests -q
 
+      - name: Set reproducible build timestamp
+        run: echo "SOURCE_DATE_EPOCH=$(git log -1 --format=%ct)" >> "$GITHUB_ENV"
+
       - name: Build wheel
         run: python -m build --wheel --no-isolation
 
@@ -64,6 +67,9 @@ jobs:
 
       - name: Install build tools
         run: pip install setuptools==78.1.1 wheel==0.46.3 build==1.2.2.post1
+
+      - name: Set reproducible build timestamp
+        run: echo "SOURCE_DATE_EPOCH=$(git log -1 --format=%ct)" >> "$GITHUB_ENV"
 
       - name: Build wheel
         run: python -m build --wheel --no-isolation

@@ -1,0 +1,16 @@
+CompliProof dashboard browser smoke
+Date: 2026-10-31
+Environment: local server on 127.0.0.1:18347; isolated /tmp workspace
+Data/account: synthetic viewer only; no customer data or credentials retained here
+
+Results:
+- Unauthenticated page displayed the sign-in form.
+- Synthetic viewer login opened the dashboard and identified the viewer role.
+- Dashboard displayed the simulated-data/prototype banner.
+- Finance and pipeline panels displayed "Restricted to owners."
+- Sign out returned to the sign-in form.
+- A subsequent GET /api/auth/me returned HTTP 401.
+
+Verification used the integrated browser against the locally running CompliProof server.
+This is a basic viewer-flow UI smoke, not role-by-role browser acceptance or a customer
+deployment test.

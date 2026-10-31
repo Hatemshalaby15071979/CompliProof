@@ -11,7 +11,6 @@ Covers:
 """
 import json
 import sys
-import tempfile
 import threading
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
@@ -21,12 +20,11 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
 from compliproof.audit import (
+    CANONICAL_LEDGER,
+    INTENT_TYPE,
+    LEGACY_DEFAULT_LEDGER,
     AuditLog,
     ProductionLedgerError,
-    CANONICAL_LEDGER,
-    LEGACY_DEFAULT_LEDGER,
-    INTENT_TYPE,
-    RESULT_TYPE,
     verify_ledger,
 )
 
@@ -196,6 +194,19 @@ def test_reorder_detected_by_anchor(tmp_path):
     (tmp_path / "audit.jsonl").write_text("\n".join(lines) + "\n")
     res = log.check_anchor()
     assert res["ok"] is False, res
+
+
+def test_append_refuses_to_extend_a_corrupt_chain(tmp_path):
+    log = _tmp_log(tmp_path)
+    log.append("event", "operator", {"value": "original"})
+    path = tmp_path / "audit.jsonl"
+    entry = json.loads(path.read_text().strip())
+    entry["payload"]["value"] = "tampered"
+    path.write_text(json.dumps(entry) + "\n")
+
+    with pytest.raises(OSError, match="Audit chain is broken"):
+        log.append("event", "operator", {"value": "must-not-append"})
+    assert verify_ledger(path)["ok"] is False
 
 
 def test_anchor_files_are_tamper_evident(tmp_path):
