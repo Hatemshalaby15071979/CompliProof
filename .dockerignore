@@ -1,0 +1,15 @@
+.git
+.pytest_cache
+.ruff_cache
+.mypy_cache
+__pycache__
+*.py[cod]
+.env*
+.venv
+venv
+build
+dist
+workspace
+helix-prime
+helix-education
+tests

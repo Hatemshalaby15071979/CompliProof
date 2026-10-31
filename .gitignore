@@ -1,0 +1,52 @@
+# CompliProof — gitignore
+
+# Build artifacts
+dist/
+build/
+*.egg-info/
+*.whl
+/helix-prime/
+/helix-education/
+
+# Python
+__pycache__/
+*.py[cod]
+*.so
+.Python
+.env/
+.venv/
+venv/
+env/
+
+# Test/cache
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+
+# Local runtime data, uploads, credentials, and audit ledgers
+/workspace/
+.env*
+!.env.example
+*.db
+*.sqlite
+*.sqlite3
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Local runtime data (workspace contains simulated/demo data and audit ledgers)
+workspace/*.jsonl
+workspace/sessions.json
+workspace/*.csv
+
+# IDE / OS
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db

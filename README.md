@@ -1,0 +1,133 @@
+# CompliProof
+
+> **Pre-production candidate — not confirmed production-ready or audit-grade.**
+> This repository targets one customer-hosted installation with multiple users; it is not a
+> multi-tenant SaaS service. Local implementation and regression tests do not close the
+> governing release gates or authorize customer-data use.
+
+CompliProof reconciles two CSV exports by a key, presents the result, and generates HTML, PDF,
+and CSV reports with a local evidence pack and hash-chained audit events.
+
+## Current status
+
+The local candidate includes bcrypt password hashes, TOTP for owner/approver accounts, hashed
+12-hour sessions, CSRF checks, role-based route permissions, an authenticated dashboard, bounded
+JSON requests, fail-closed state reads, task-scoped report routes, row-level report persistence,
+and a 30-day result-retention policy. The report file's SHA-256 is recorded in the local audit
+ledger and checked before it is served. Uploaded CSV files are temporary and removed after
+reconciliation.
+
+These are implementation facts, not a production-readiness declaration. The authoritative
+register remains [`../company-os/stage-0/P0_REGISTER.yaml`](../company-os/stage-0/P0_REGISTER.yaml):
+**seven P0 findings are still open** because Owner-signed closure evidence has not been recorded.
+There is no approved customer deployment, no production dataset, and no external product claim.
+
+## Important remaining release gaps
+
+- **Evidence trust:** the evidence pack uses local hashes/HMACs, not an asymmetric signature or
+  independent verifier. The local ledger can be rewritten by an attacker with sufficient access;
+  no verified external anchor or key lifecycle is established.
+- **Operations:** backup/restore, upgrade/migration, rollback, monitoring, incident response,
+  capacity, and customer-side retention/backups have not passed operational drills.
+- **Authentication operations:** login throttling is in-memory and per process; privileged TOTP
+  secrets are stored in the private workspace; account recovery, credential rotation, and
+  multi-process session coordination are not implemented.
+- **Deployment/supply chain:** local builds do not prove CI, hash-locked dependencies, a
+  digest-pinned base image, or a customer environment. The included CI workflow has not been
+  executed from GitHub in this local-only workflow.
+- **Reconciliation scope:** duplicate/missing keys, very large files, recovery after interruption,
+  and complete CLI/server report parity still need registered acceptance evidence.
+- **Data protection:** row-level reports remain on disk for 30 days. Files are mode-restricted,
+  but filesystem encryption, backup expiry, and deletion from external backups are the
+  operator's responsibility.
+
+See [`AUDIT_REPORT.md`](./AUDIT_REPORT.md) for the dated assessment and
+[`REMEDIATION_PLAN.md`](./REMEDIATION_PLAN.md) for the closeout checklist.
+
+## Local development
+
+Python 3.10+ is declared; the checked-in CI currently targets Python 3.11. Install from this
+directory, then provision an account. Privileged roles require an authenticator app.
+
+```bash
+python3 -m pip install .
+export COMPLIPROOF_WORKSPACE="$PWD/workspace"
+compliproof users add owner --email owner@example.test --role owner
+compliproof-server
+```
+
+The account command prompts for a password and, for owner/approver, verifies TOTP enrollment
+before saving the account. Open `http://127.0.0.1:8200/`. Registration is disabled by default.
+The optional `--allow-registration` bootstrap is loopback-only and creates viewer accounts; do
+not enable it for a network-facing service.
+
+For development directly from the source tree:
+
+```bash
+PYTHONPATH=src python -m compliproof.cli audit verify
+PYTHONPATH=src python -m compliproof.cli reconcile a.csv b.csv id
+PYTHONPATH=src python -m compliproof.server
+```
+
+## Data handling and roles
+
+- The HTTP request limit is 5 MiB. CSV upload files are written to a private temporary directory
+  and removed after reconciliation.
+- Full row-level results are stored under `$COMPLIPROOF_WORKSPACE/results/` with directory mode
+  `0700` and file mode `0600`. A local audit event records the result hash. Stored row-level
+  results are deleted after 30 days; the server checks hourly, CLI saves prune expired
+  records, and CLI loads remove the requested expired record. HTML files explicitly exported by
+  the CLI are outside this managed retention.
+- A local hash chain is not an external trust anchor. Keep the workspace on an encrypted volume,
+  restrict service-account access, and align backups with the 30-day retention policy.
+- Roles: `owner` manages finance/pipeline and audit; `approver` can operate and read audit;
+  `operator` can reconcile and manage tasks; `auditor` is read/audit-only; `viewer` is read-only.
+- All application/data API routes require a session; login and the optional loopback-only
+  registration endpoint are exceptions. The dashboard shell itself is public and shows a login
+  form. `/api/healthz` returns only `{"ok": true}` for health probes.
+
+## Container
+
+The image runs as a non-root user, binds inside the container, and sets secure cookies. The
+service has no built-in TLS. Put it behind a trusted TLS-terminating reverse proxy; do not expose
+the container port directly. Non-loopback server bindings require
+`COMPLIPROOF_SECURE_COOKIES=1`.
+
+```bash
+docker build -f docker/Dockerfile -t compliproof:local .
+docker volume create compliproof-local-data
+docker run --rm --name compliproof-local \
+  -p 127.0.0.1:8200:8200 \
+  -v compliproof-local-data:/app/workspace \
+  compliproof:local
+```
+
+This is a local container smoke path, not a customer deployment or operations runbook.
+
+## Tests and local packaging
+
+```bash
+COMPLIPROOF_WORKSPACE=/tmp/compliproof-tests python3 -m pytest tests -q
+ruff check src/compliproof/auth.py src/compliproof/server.py src/compliproof/cli.py \
+  src/compliproof/reconcile.py src/compliproof/report.py \
+  tests/test_security.py tests/test_server_auth.py tests/test_report.py tests/test_cli_workspace.py
+python3 -m pip wheel . --no-deps --no-build-isolation -w /tmp/compliproof-wheel
+```
+
+The tests use temporary workspaces and ledgers. Do not point test runs at a customer workspace.
+The GitHub workflow additionally builds/installs a wheel, runs scans, and builds the container;
+those hosted checks are not represented as passed until a real CI run exists.
+The repository-wide Ruff scan currently has existing findings in other untouched files; the
+changed Python paths above are clean.
+
+## Claims and governance
+
+Customer-facing claims remain blocked by the claims register. The product is not certified,
+independently audited, or represented as a compliance determination. Synthetic fixtures and local
+tests are simulation evidence only. See [`../company-os/stage-0/CLAIMS_REGISTRY.yaml`](../company-os/stage-0/CLAIMS_REGISTRY.yaml)
+and [`../company-os/stage-0/TRUTH_FREEZE_WORK_ORDER.md`](../company-os/stage-0/TRUTH_FREEZE_WORK_ORDER.md).
+
+## License
+
+The root `LICENSE` and package metadata declare MIT. Dependency-license provenance and third-party
+source lineage still require review; the license declaration is not that review.

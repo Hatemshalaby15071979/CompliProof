@@ -1,0 +1,6 @@
+# CompliProof dependency lockfile
+# Runtime dependency closure measured from a clean wheel installation.
+reportlab==5.0.1
+pillow==13.0.0
+charset-normalizer==3.5.2
+bcrypt==5.0.0

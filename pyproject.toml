@@ -1,0 +1,36 @@
+[project]
+name = "compliproof"
+version = "0.1.0"
+description = "Prototype local reconciliation and evidence-pack tool (not production-ready, not audit-grade)"
+readme = "README.md"
+requires-python = ">=3.10"
+license = "MIT"
+authors = [{name = "Hatem Shalaby"}]
+dependencies = ["reportlab==5.0.1", "bcrypt==5.0.0"]
+
+[project.scripts]
+compliproof = "compliproof.cli:main"
+compliproof-server = "compliproof.server:main"
+
+[build-system]
+requires = ["setuptools==78.1.1", "wheel==0.46.3"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["compliproof*"]
+
+[tool.setuptools.data-files]
+"share/compliproof/dashboard" = ["dashboard/home.html"]
+
+[tool.ruff]
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E4", "E7", "E9", "F", "I", "B", "S"]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/*" = ["S101", "S603", "S607", "S608", "S105", "S110", "B017", "E402", "F841"]
+
+[tool.pytest.ini_options]
+markers = ["ui_integration: tests that exercise the user interface"]
