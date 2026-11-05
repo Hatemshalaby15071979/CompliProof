@@ -94,6 +94,8 @@ _WRITE_PERMISSION = {
     "/api/tasks/add": "operate",
     "/api/finance": "admin",
     "/api/pipeline": "admin",
+    "/api/auth/reset-password": "admin",
+    "/api/auth/deactivate-user": "admin",
     "/api/chat": "read",
     "/api/auth/logout": "read",
 }
@@ -757,6 +759,7 @@ class Handler(BaseHTTPRequestHandler):
         elif path == "/api/tasks/done":
             body = _read_body(self)
             task_id = body.get("id")
+            intent = log.append_intent("task.completed", user["id"], {"id": task_id})
             with _state_lock:
                 try:
                     tasks = _load_tasks()
@@ -775,10 +778,11 @@ class Handler(BaseHTTPRequestHandler):
             if not found:
                 _json_response(self, {"error": "task not found"}, 404)
                 return
-            log.append("task.completed", user["id"], {"id": task_id})
+            log.append_result(intent, "task.completed", user["id"], {"id": task_id})
             _json_response(self, {"ok": True, "id": task_id})
         elif path == "/api/tasks/add":
             body = _read_body(self)
+            intent = log.append_intent("task.created", user["id"], {"title": body.get("title", "Untitled")})
             with _state_lock:
                 try:
                     tasks = _load_tasks()
@@ -801,10 +805,11 @@ class Handler(BaseHTTPRequestHandler):
                 }
                 tasks.append(new_task)
                 _save_tasks(tasks)
-            log.append("task.created", user["id"], {"id": new_id, "title": new_task["title"]})
+            log.append_result(intent, "task.created", user["id"], {"id": new_id, "title": new_task["title"]})
             _json_response(self, {"ok": True, "task": new_task})
         elif path == "/api/finance":
             body = _read_body(self)
+            intent = log.append_intent("finance.updated", user["id"], {k: v for k, v in body.items() if k in ("mrr", "burn", "runway", "customers")})
             FINANCE_FILE = WORKSPACE / "finance" / "finance.json"
             with _state_lock:
                 data = {}
@@ -820,10 +825,11 @@ class Handler(BaseHTTPRequestHandler):
                 data.update(body)
                 data["updated"] = datetime.now(timezone.utc).isoformat(timespec="seconds")
                 _write_json_state(FINANCE_FILE, data)
-            log.append("finance.updated", user["id"], {k: v for k, v in body.items() if k in ("mrr", "burn", "runway", "customers")})
+            log.append_result(intent, "finance.updated", user["id"], {k: v for k, v in body.items() if k in ("mrr", "burn", "runway", "customers")})
             _json_response(self, {"ok": True, "finance": data})
         elif path == "/api/pipeline":
             body = _read_body(self)
+            intent = log.append_intent("pipeline.updated", user["id"], {"id": body.get("id"), "name": body.get("name", ""), "stage": body.get("stage", "prospect")})
             PIPELINE_FILE = WORKSPACE / "pipeline" / "pipeline.json"
             with _state_lock:
                 leads = []
@@ -856,7 +862,7 @@ class Handler(BaseHTTPRequestHandler):
                 if not found:
                     leads.append(lead)
                 _write_json_state(PIPELINE_FILE, leads)
-            log.append("pipeline.updated", user["id"], {"id": lead["id"], "name": lead["name"], "stage": lead["stage"]})
+            log.append_result(intent, "pipeline.updated", user["id"], {"id": lead["id"], "name": lead["name"], "stage": lead["stage"]})
             _json_response(self, {"ok": True, "lead": lead})
         elif path == "/api/auth/login":
             body = _read_body(self)
@@ -940,6 +946,33 @@ class Handler(BaseHTTPRequestHandler):
             _set_session_cookie(self, "", max_age=0)
             self.end_headers()
             self.wfile.write(json.dumps({"ok": True}).encode())
+        elif path == "/api/auth/reset-password":
+            body = _read_body(self)
+            target_id = body.get("user_id")
+            new_password = body.get("password")
+            if not isinstance(target_id, str) or not isinstance(new_password, str) or len(new_password) < 12:
+                _json_response(self, {"error": "invalid request"}, status=400)
+                return
+            intent = log.append_intent("auth.password_reset", user["id"], {"target": target_id})
+            ok = auth.set_password(target_id, new_password)
+            if not ok:
+                _json_response(self, {"error": "user not found"}, status=404)
+                return
+            log.append_result(intent, "auth.password_reset", user["id"], {"target": target_id})
+            _json_response(self, {"ok": True})
+        elif path == "/api/auth/deactivate-user":
+            body = _read_body(self)
+            target_id = body.get("user_id")
+            if not isinstance(target_id, str):
+                _json_response(self, {"error": "invalid request"}, status=400)
+                return
+            intent = log.append_intent("auth.deactivate_user", user["id"], {"target": target_id})
+            ok = auth.deactivate_user(target_id)
+            if not ok:
+                _json_response(self, {"error": "user not found"}, status=404)
+                return
+            log.append_result(intent, "auth.deactivate_user", user["id"], {"target": target_id})
+            _json_response(self, {"ok": True})
         elif path == "/api/chat":
             self._handle_chat(user)
         else:

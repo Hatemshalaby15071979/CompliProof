@@ -8,7 +8,7 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
 
-from compliproof.audit import AuditLog, DEFAULT_LOG, ProductionLedgerError
+from compliproof.audit import DEFAULT_LOG, AuditLog, ProductionLedgerError
 
 
 def test_append_and_verify_chain():
@@ -57,7 +57,6 @@ def test_empty_log_verify():
 
 
 def test_cli_append_verify():
-    import subprocess
     with tempfile.TemporaryDirectory() as tmp:
         log_path = Path(tmp) / "audit.jsonl"
         # We can't easily test CLI without changing DEFAULT_LOG, so just test the module directly

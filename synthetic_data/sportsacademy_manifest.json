@@ -1,0 +1,31 @@
+{
+  "checksum": "4b72c32507899a7b6d85c3edabe4a6836bf67a5bcee1b2a10c261cf4b58babde",
+  "fields": [
+    "id",
+    "athlete_name",
+    "sport",
+    "division",
+    "compliance_status",
+    "enrollment_date",
+    "timestamp"
+  ],
+  "generated_at": "2026-11-04T07:02:42.504947+00:00",
+  "record_count": 12,
+  "row_hashes": [
+    "82b34b2f743f790d1582a7ffde04eed6aa7afafe61864f4862681a49d216526e",
+    "7f11e59483c5ae137514acba8a433e60478cabf7282be79aa3a048bd6cb3d453",
+    "065b3f45e5ef854b4fc870533fafb96199eaef39179ae74383afc888cd8af48c",
+    "9d15ff1a6ee6922889149ba30d6da779828c14fb31f16b972ce84237ced2d3c5",
+    "87bf3731526cc1acf5327409fffd8cf03bc85ecabad5a5f9da850240444a0faa",
+    "a8dee919ffe78b072150098c69fa74a85e37031da0b4690497860ed30f29f9b9",
+    "beeef547b377b1b367faf6533f5367e5ea0f4bed8823a2411634c3372f754c58",
+    "dd9faf77689b2db51f151efbc7167cde37942afe9c604743615b0e1e4f5f80dc",
+    "da921a91bd7fc4bae5796ed49ba56c9aeb463e702ed02d64d6e09bed70711050",
+    "77c280a58f50b90622c44c78d33496ae8a7ef101baa69f6cd0fc27d96668ece1",
+    "30737ed4e2dbe6cc6a02cbdadec245d81e74cae741bf52e2e434c4427c782c51",
+    "64fbc340645bc6209a7b9310845eba2b460814d7f8da4734591cb6e47aa64808"
+  ],
+  "seed": 42,
+  "synthetic_label": "COMPLIPROOF_SYNTHETIC_DATA_2026-11-04",
+  "tenant": "sportsacademy"
+}

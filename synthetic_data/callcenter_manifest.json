@@ -1,0 +1,31 @@
+{
+  "checksum": "4bcde4132bdf92ece2a1c9b4bae9616da3210630cc4c7f16740630dad011fd9a",
+  "fields": [
+    "id",
+    "name",
+    "email",
+    "department",
+    "role",
+    "compliance_status",
+    "timestamp"
+  ],
+  "generated_at": "2026-11-04T07:02:42.504926+00:00",
+  "record_count": 12,
+  "row_hashes": [
+    "c223ffb8865b95de38b49b2e4908e72276d48051892633f42251075565ac5a6c",
+    "bf175fd23a2e9a05e99cdaf64c5f5e40bf0aafaf660a72009ec28341bfbd0562",
+    "06b933dd76f353bc1d27689393ef9cc8d80feb5acb9da7c76b9bf7120fccd1a1",
+    "7d9ac4d2298573d6d0947f5ab9be1c556d7654c9a64d3078612d7c6efdedf871",
+    "41a9f4868dcf37eee70a03d81dc987c93d2c9acc37de8472ba5080b5b9ab0694",
+    "15a2a2c95602331b491cf2872ff3d5a35db233b7ae0a1289f823586f56cebca1",
+    "653eadf55644dc43893a91223d0a1023a860b209de4dc95eb391f74bcd0d3005",
+    "0ad8bed7627c3ab2a084fc8bf693baf878dcc13fb7f4a9105699f9b4cd1df09c",
+    "1d9a7cb21d2984d327462f74584a72a5d5231e080141e63a9a7bb40b4552c07a",
+    "7e9a33ef00456020aa7fef825c3ad77c7d4a1c49c9cabeda958cf3a4d0f51240",
+    "a73cc769ebacb4edb3786575ad278be230d90c4e5dfa61f18f57771dbef6407d",
+    "010dc7e374ae6d5a48d2469cfef94c055aff976858866a8970d15d491507599b"
+  ],
+  "seed": 42,
+  "synthetic_label": "COMPLIPROOF_SYNTHETIC_DATA_2026-11-04",
+  "tenant": "callcenter"
+}

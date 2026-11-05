@@ -1,0 +1,12 @@
+id,athlete_name,sport,division,compliance_status,enrollment_date,timestamp
+EXT-SA-002,Athlete_EXT-SA-002,football,division5,compliant,2025-09-02,2025-09-02T08:00:00+00:00
+EXT-SA-003,Athlete_EXT-SA-003,football,division99,compliant,2025-09-03,2025-09-03T08:00:00+00:00
+EXT-SA-004,Athlete_EXT-SA-004,football,division4,compliant,2025-09-04,2025-09-04T08:00:00+00:00
+EXT-SA-005,Athlete_EXT-SA-005,football,division1,compliant,2025-09-05,2025-09-05T08:00:00+00:00
+EXT-SA-006,Athlete_EXT-SA-006,football,division3,compliant,2025-09-06,2025-09-06T08:00:00+00:00
+EXT-SA-007,Athlete_EXT-SA-007,football,division5,compliant,2026-01-02,2026-01-02T16:45:00+00:00
+EXT-SA-008,Athlete_EXT-SA-008,football,division2,compliant,2026-01-03,2026-01-03T16:45:00+00:00
+EXT-SA-009,Athlete_EXT-SA-009,football,division4,compliant,2026-01-04,2026-01-04T16:45:00+00:00
+EXT-SA-010,Athlete_EXT-SA-010,football,division1,non-compliant,2026-01-05,2026-01-05T16:45:00+00:00
+EXT-SA-011,Athlete_EXT-SA-011,football,division3,compliant,2026-01-06,2026-01-06T16:45:00+00:00
+EXT-SA-012,Athlete_EXT-SA-012,football,division5,compliant,2026-01-07,2026-01-07T16:45:00+00:00

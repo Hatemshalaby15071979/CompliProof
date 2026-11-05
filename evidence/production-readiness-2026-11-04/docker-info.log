@@ -1,0 +1,61 @@
+Client:
+ Version:    29.1.3
+ Context:    default
+ Debug Mode: false
+ Plugins:
+  compose: Docker Compose (Docker Inc.)
+    Version:  2.40.3+ds1-0ubuntu1
+    Path:     /usr/libexec/docker/cli-plugins/docker-compose
+  trust: Manage trust on Docker images (Docker Inc.)
+    Version:  29.1.3
+    Path:     /usr/libexec/docker/cli-plugins/docker-trust
+
+Server:
+ Containers: 5
+  Running: 0
+  Paused: 0
+  Stopped: 5
+ Images: 256
+ Server Version: 29.1.3
+ Storage Driver: overlayfs
+  driver-type: io.containerd.snapshotter.v1
+ Logging Driver: json-file
+ Cgroup Driver: systemd
+ Cgroup Version: 2
+ Plugins:
+  Volume: local
+  Network: bridge host ipvlan macvlan null overlay
+  Log: awslogs fluentd gcplogs gelf journald json-file local splunk syslog
+ CDI spec directories:
+  /etc/cdi
+  /var/run/cdi
+ Swarm: inactive
+ Runtimes: io.containerd.runc.v2 runc
+ Default Runtime: runc
+ Init Binary: docker-init
+ containerd version: 
+ runc version: 
+ init version: 
+ Security Options:
+  apparmor
+  seccomp
+   Profile: builtin
+  cgroupns
+ Kernel Version: 7.0.0-42-generic
+ Operating System: Ubuntu 26.04.1 LTS
+ OSType: linux
+ Architecture: x86_64
+ CPUs: 16
+ Total Memory: 14.94GiB
+ Name: [REDACTED_HOST]
+ ID: 220eef1f-22d3-4594-ba7e-4eb33ca4eb54
+ Docker Root Dir: /var/lib/docker
+ Debug Mode: false
+ Experimental: false
+ Insecure Registries:
+  ::1/128
+  127.0.0.0/8
+ Live Restore Enabled: false
+ Firewall Backend: iptables
+
+docker_info_exit=0

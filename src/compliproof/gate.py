@@ -16,7 +16,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
-from typing import Any
 
 DEFAULT_MIN_MARGIN = 0.18
 DEFAULT_ABSOLUTE_FLOOR = 0.60

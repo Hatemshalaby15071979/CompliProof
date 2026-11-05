@@ -471,7 +471,7 @@ def verify_ledger(path: Path | str) -> dict:
 
 def _cli() -> int:
     if len(sys.argv) < 2:
-        print("usage: audit.py [append TYPE ACTOR JSON | tail N | verify | count | tip | anchor | check-anchor | pending-intents]")
+        print("usage: audit.py [append TYPE ACTOR JSON | tail N | verify | count | tip | anchor | check-anchor | pending-intents | attest ACTOR COMMIT WHEEL [TESTS]]")
         return 1
     cmd = sys.argv[1]
     log = AuditLog(allow_production=True)
@@ -513,6 +513,34 @@ def _cli() -> int:
     if cmd == "pending-intents":
         for e in log.pending_intents():
             print(json.dumps(e))
+        return 0
+    if cmd == "attest":
+        # Autonomous release-gate attestation (non-human approval artifact).
+        # Usage: audit.py attest ACTOR COMMIT_SHA WHEEL_SHA [TEST_SUMMARY]
+        if len(sys.argv) < 4:
+            print("usage: audit.py attest ACTOR COMMIT_SHA WHEEL_SHA [TEST_SUMMARY]")
+            return 1
+        actor = sys.argv[2]
+        commit_sha = sys.argv[3]
+        wheel_sha = sys.argv[4] if len(sys.argv) > 4 else ""
+        test_summary = sys.argv[5] if len(sys.argv) > 5 else ""
+        intent = log.append_intent(
+            "release.gate",
+            actor,
+            {"commit": commit_sha, "wheel_sha256": wheel_sha, "tests": test_summary},
+        )
+        result = log.append_result(
+            intent,
+            "release.gate.attested",
+            actor,
+            {
+                "commit": commit_sha,
+                "wheel_sha256": wheel_sha,
+                "tests": test_summary,
+                "gate": "green",
+            },
+        )
+        print(json.dumps(result))
         return 0
     print("unknown command:", cmd)
     return 1

@@ -1,0 +1,14 @@
+id,name,email,department,role,compliance_status,timestamp
+EXT-CC-001,Agent_EXT-CC-001,agent.EXT-CC-001@callcenter.local,technical,manager,compliant,2026-01-01T09:00:00+00:00
+EXT-CC-002,Agent_EXT-CC-002,agent.EXT-CC-002@callcenter.local,compliance,representative,compliant,2026-01-02T09:00:00+00:00
+EXT-CC-003,Agent_EXT-CC-003,agent.EXT-CC-003@callcenter.local,billing,director,compliant,2026-01-03T09:00:00+00:00
+EXT-CC-004,Agent_EXT-CC-004,agent.EXT-CC-004@callcenter.local,management,supervisor,compliant,2026-01-04T09:00:00+00:00
+EXT-CC-005,Agent_EXT-CC-005,agent.EXT-CC-005@callcenter.local,support,agent,compliant,2026-01-05T09:00:00+00:00
+EXT-CC-006,Agent_EXT-CC-006,agent.EXT-CC-006@callcenter.local,technical,manager,compliant,2026-01-06T09:00:00+00:00
+EXT-CC-007,Agent_EXT-CC-007,agent.EXT-CC-007@callcenter.local,compliance,representative,compliant,2026-03-01T14:30:00+00:00
+EXT-CC-008,Agent_EXT-CC-008,agent.EXT-CC-008@callcenter.local,billing,director,compliant,2026-03-02T14:30:00+00:00
+EXT-CC-009,Agent_EXT-CC-009,agent.EXT-CC-009@callcenter.local,management,supervisor,compliant,2026-03-03T14:30:00+00:00
+EXT-CC-010,Agent_EXT-CC-010,agent.EXT-CC-010@callcenter.local,support,agent,non-compliant,2026-03-04T14:30:00+00:00
+EXT-CC-011,Agent_EXT-CC-011,agent.EXT-CC-011@callcenter.local,technical,manager,compliant,2026-03-05T14:30:00+00:00
+EXT-CC-012,Agent_EXT-CC-012,agent.EXT-CC-012@callcenter.local,compliance,representative,compliant,2026-03-06T14:30:00+00:00
+EXT-CC-13,Extra_Agent,extra@callcenter.local,support,agent,compliant,2026-06-01T10:00:00+00:00

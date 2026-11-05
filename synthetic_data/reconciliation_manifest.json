@@ -1,0 +1,48 @@
+{
+  "callcenter_rows": 12,
+  "checksums": {
+    "callcenter_csv": "ff19d780dbf5b799b943dcd65257586228c8f581fca2ef5d7830ab0ebe3437f7",
+    "recon_a_csv": "a1a23b67afb2b9982caba81e15a5ce0c7b9c46cf27deb1599a6b47e3bb2f9364",
+    "recon_b_csv": "600e9193d8acfc647221e46111cd68d130e62e4c99d6a7a21e845bd0d7650fd5",
+    "sportsacademy_csv": "e297f843a958c06f93b77750e71384325d78351945a188c27cefe784a0576644"
+  },
+  "extra_rows_a": 1,
+  "key_column": "id",
+  "mismatched_rows": 1,
+  "missing_rows_b": 1,
+  "reconciliation_id": "RECON-2026-11-04-001",
+  "row_hashes_a": [
+    "c223ffb8865b95de38b49b2e4908e72276d48051892633f42251075565ac5a6c",
+    "bf175fd23a2e9a05e99cdaf64c5f5e40bf0aafaf660a72009ec28341bfbd0562",
+    "06b933dd76f353bc1d27689393ef9cc8d80feb5acb9da7c76b9bf7120fccd1a1",
+    "7d9ac4d2298573d6d0947f5ab9be1c556d7654c9a64d3078612d7c6efdedf871",
+    "41a9f4868dcf37eee70a03d81dc987c93d2c9acc37de8472ba5080b5b9ab0694",
+    "15a2a2c95602331b491cf2872ff3d5a35db233b7ae0a1289f823586f56cebca1",
+    "653eadf55644dc43893a91223d0a1023a860b209de4dc95eb391f74bcd0d3005",
+    "0ad8bed7627c3ab2a084fc8bf693baf878dcc13fb7f4a9105699f9b4cd1df09c",
+    "1d9a7cb21d2984d327462f74584a72a5d5231e080141e63a9a7bb40b4552c07a",
+    "7e9a33ef00456020aa7fef825c3ad77c7d4a1c49c9cabeda958cf3a4d0f51240",
+    "a73cc769ebacb4edb3786575ad278be230d90c4e5dfa61f18f57771dbef6407d",
+    "010dc7e374ae6d5a48d2469cfef94c055aff976858866a8970d15d491507599b",
+    "c71ff75454ce03725aae09e718fc849dd7427137afa9a9f8b8c7056d8e4170a2"
+  ],
+  "row_hashes_b": [
+    "82b34b2f743f790d1582a7ffde04eed6aa7afafe61864f4862681a49d216526e",
+    "7f11e59483c5ae137514acba8a433e60478cabf7282be79aa3a048bd6cb3d453",
+    "065b3f45e5ef854b4fc870533fafb96199eaef39179ae74383afc888cd8af48c",
+    "9d15ff1a6ee6922889149ba30d6da779828c14fb31f16b972ce84237ced2d3c5",
+    "87bf3731526cc1acf5327409fffd8cf03bc85ecabad5a5f9da850240444a0faa",
+    "a8dee919ffe78b072150098c69fa74a85e37031da0b4690497860ed30f29f9b9",
+    "beeef547b377b1b367faf6533f5367e5ea0f4bed8823a2411634c3372f754c58",
+    "dd9faf77689b2db51f151efbc7167cde37942afe9c604743615b0e1e4f5f80dc",
+    "da921a91bd7fc4bae5796ed49ba56c9aeb463e702ed02d64d6e09bed70711050",
+    "77c280a58f50b90622c44c78d33496ae8a7ef101baa69f6cd0fc27d96668ece1",
+    "30737ed4e2dbe6cc6a02cbdadec245d81e74cae741bf52e2e434c4427c782c51"
+  ],
+  "sportsacademy_rows": 12,
+  "synthetic_label": "COMPLIPROOF_SYNTHETIC_DATA_2026-11-04",
+  "tenant_a": "callcenter",
+  "tenant_b": "sportsacademy",
+  "total_a": 13,
+  "total_b": 11
+}

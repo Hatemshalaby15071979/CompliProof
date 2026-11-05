@@ -1,0 +1,128 @@
+I001 [*] Import block is un-sorted or un-formatted
+  --> tests/test_synthetic_scenarios.py:19:1
+   |
+17 |   """
+18 |
+19 | / import csv
+20 | | import copy
+21 | | import hashlib
+22 | | import json
+23 | | import os
+24 | | import random
+25 | | import sys
+26 | | import tempfile
+27 | | from datetime import datetime
+28 | | from pathlib import Path
+29 | |
+30 | | import pytest
+   | |_____________^
+31 |
+32 |   sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
+   |
+help: Organize imports
+   |
+18 |
+19 + import copy
+20 | import csv
+   - import copy
+21 | import hashlib
+   |
+
+I001 [*] Import block is un-sorted or un-formatted
+  --> tests/test_synthetic_scenarios.py:34:1
+   |
+32 |   sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "src"))
+33 |
+34 | / from compliproof.audit import AuditLog
+35 | | from compliproof.reconcile import ReconciliationEngine
+36 | | from compliproof.report import ReportGenerator
+   | |______________________________________________^
+help: Organize imports
+   |
+37 |
+   -
+38 | # ============================================================
+   |
+
+S311 Standard pseudo-random generators are not suitable for cryptographic purposes
+  --> tests/test_synthetic_scenarios.py:50:12
+   |
+48 | def _seed_rng(seed=42):
+49 |     """Create a deterministic RNG."""
+50 |     return random.Random(seed)
+   |            ^^^^^^^^^^^^^^^^^^^
+
+S311 Standard pseudo-random generators are not suitable for cryptographic purposes
+   --> tests/test_synthetic_scenarios.py:185:9
+    |
+183 |         # Shuffle B records
+184 |         b_rows = list(generate_callcenter_records(12))
+185 |         random.Random(99).shuffle(b_rows)  # different order, same keys
+    |         ^^^^^^^^^^^^^^^^^
+186 |         key_column = "id"
+    |
+
+B007 Loop control variable `i` not used within loop body
+   --> tests/test_synthetic_scenarios.py:275:9
+    |
+274 |     # Verify row hashes match
+275 |     for i, (row_a, row_b) in enumerate(zip(result.matched_rows, scenario["source_a_rows"])):
+    |         ^
+276 |         assert row_a["row_a"][scenario["key_column"]] == row_b[scenario["key_column"]]
+    |
+help: Rename unused `i` to `_i`
+    |
+274 |     # Verify row hashes match
+    -     for i, (row_a, row_b) in enumerate(zip(result.matched_rows, scenario["source_a_rows"])):
+275 +     for _i, (row_a, row_b) in enumerate(zip(result.matched_rows, scenario["source_a_rows"])):
+276 |         assert row_a["row_a"][scenario["key_column"]] == row_b[scenario["key_column"]]
+    |
+note: This is an unsafe fix and may change runtime behavior
+
+B905 `zip()` without an explicit `strict=` parameter
+   --> tests/test_synthetic_scenarios.py:275:40
+    |
+274 |     # Verify row hashes match
+275 |     for i, (row_a, row_b) in enumerate(zip(result.matched_rows, scenario["source_a_rows"])):
+    |                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+276 |         assert row_a["row_a"][scenario["key_column"]] == row_b[scenario["key_column"]]
+    |
+help: Add explicit value for parameter `strict=`
+    |
+274 |     # Verify row hashes match
+    -     for i, (row_a, row_b) in enumerate(zip(result.matched_rows, scenario["source_a_rows"])):
+275 +     for i, (row_a, row_b) in enumerate(zip(result.matched_rows, scenario["source_a_rows"], strict=False)):
+276 |         assert row_a["row_a"][scenario["key_column"]] == row_b[scenario["key_column"]]
+    |
+note: This is an unsafe fix and may change runtime behavior
+
+I001 [*] Import block is un-sorted or un-formatted
+   --> tests/test_synthetic_scenarios.py:535:5
+    |
+534 |     # Save result and generate report
+535 |     from compliproof.report import save_reconciliation_result, load_reconciliation_result
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+536 |     
+537 |     save_reconciliation_result(tmp, result.to_dict(), audit=audit, actor_id="BA")
+    |
+help: Organize imports
+    |
+534 |     # Save result and generate report
+    -     from compliproof.report import save_reconciliation_result, load_reconciliation_result
+535 +     from compliproof.report import load_reconciliation_result, save_reconciliation_result
+536 |     
+    |
+
+S311 Standard pseudo-random generators are not suitable for cryptographic purposes
+   --> tests/test_synthetic_scenarios.py:799:13
+    |
+797 |             rows_a = generate_callcenter_records(12)
+798 |             rows_b = list(generate_callcenter_records(12))
+799 |             random.Random(99).shuffle(rows_b)
+    |             ^^^^^^^^^^^^^^^^^
+800 |             pa = Path(tmp) / "a.csv"
+801 |             pb = Path(tmp) / "b.csv"
+    |
+
+Found 8 errors.
+[*] 3 fixable with `--fix` (2 unsafe fixes available with `--fix --unsafe-fixes`).

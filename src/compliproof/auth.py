@@ -18,6 +18,14 @@ from typing import Optional
 
 import bcrypt
 
+try:
+    from cryptography.fernet import Fernet
+
+    _CRYPTO_AVAILABLE = True
+except ImportError:  # pragma: no cover - optional hardening dependency
+    Fernet = None  # type: ignore[assignment]
+    _CRYPTO_AVAILABLE = False
+
 ROLES = {"owner", "approver", "operator", "auditor", "viewer"}
 MFA_ROLES = {"owner", "approver"}
 # Storage marker for a password hash, not a usable password.
@@ -88,18 +96,36 @@ def _verify_password(password: str, stored: str) -> bool:
 
 def _atomic_json(path: Path, data: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
-    fd, temporary = tempfile.mkstemp(prefix=f".{path.name}.", dir=path.parent)
-    try:
-        os.fchmod(fd, 0o600)
-        with os.fdopen(fd, "w", encoding="utf-8") as handle:
-            json.dump(data, handle, indent=2)
-            handle.flush()
-            os.fsync(handle.fileno())
-        os.replace(temporary, path)
-        os.chmod(path, 0o600)
-    finally:
-        if os.path.exists(temporary):
-            os.unlink(temporary)
+    lock_path = path.with_name(path.name + ".lock")
+    with lock_path.open("a") as lock_f:
+        try:
+            import fcntl
+
+            fcntl.flock(lock_f.fileno(), fcntl.LOCK_EX)
+            have_lock = True
+        except (ImportError, OSError):
+            have_lock = False
+        try:
+            fd, temporary = tempfile.mkstemp(prefix=f".{path.name}.", dir=path.parent)
+            try:
+                os.fchmod(fd, 0o600)
+                with os.fdopen(fd, "w", encoding="utf-8") as handle:
+                    json.dump(data, handle, indent=2)
+                    handle.flush()
+                    os.fsync(handle.fileno())
+                os.replace(temporary, path)
+                os.chmod(path, 0o600)
+            finally:
+                if os.path.exists(temporary):
+                    os.unlink(temporary)
+        finally:
+            if have_lock:
+                try:
+                    import fcntl
+
+                    fcntl.flock(lock_f.fileno(), fcntl.LOCK_UN)
+                except (ImportError, OSError):
+                    pass
 
 
 class AuthManager:
@@ -109,12 +135,60 @@ class AuthManager:
         self.workspace = Path(workspace_path)
         self.users_file = self.workspace / "users.json"
         self.sessions_file = self.workspace / "sessions.json"
+        self.key_file = self.workspace / ".auth_key"
         self._users: dict[str, dict] = {}
         self._sessions: dict[str, dict] = {}
         self._lock = threading.RLock()
         self.workspace.mkdir(parents=True, exist_ok=True, mode=0o700)
         os.chmod(self.workspace, 0o700)
+        self._fernet = self._load_or_create_fernet()
         self._load()
+
+    def _load_or_create_fernet(self):
+        if not _CRYPTO_AVAILABLE:
+            return None
+        env_key = os.environ.get("COMPLIPROOF_MASTER_KEY", "").strip()
+        if env_key:
+            try:
+                return Fernet(env_key.encode("ascii"))
+            except (ValueError, TypeError):
+                pass
+        if self.key_file.exists():
+            try:
+                return Fernet(self.key_file.read_bytes().strip())
+            except (ValueError, OSError):
+                pass
+        key = Fernet.generate_key()
+        fd, tmp = tempfile.mkstemp(prefix=".auth_key.", dir=self.workspace)
+        try:
+            os.fchmod(fd, 0o600)
+            with os.fdopen(fd, "wb") as handle:
+                handle.write(key)
+                handle.flush()
+                os.fsync(handle.fileno())
+            os.replace(tmp, self.key_file)
+            os.chmod(self.key_file, 0o600)
+        finally:
+            if os.path.exists(tmp):
+                os.unlink(tmp)
+        return Fernet(key)
+
+    def _encrypt_secret(self, secret: str | None) -> str | None:
+        if not secret or self._fernet is None:
+            return secret
+        return "enc:" + self._fernet.encrypt(secret.encode("utf-8")).decode("ascii")
+
+    def _decrypt_secret(self, stored: str | None) -> str | None:
+        if not stored or not isinstance(stored, str):
+            return stored
+        if not stored.startswith("enc:"):
+            return stored  # legacy plaintext
+        if self._fernet is None:
+            return None
+        try:
+            return self._fernet.decrypt(stored[4:].encode("ascii")).decode("utf-8")
+        except (ValueError, TypeError):
+            return None
 
     def _load_json(self, path: Path) -> dict:
         if not path.exists():
@@ -164,6 +238,7 @@ class AuthManager:
         if totp_secret:
             _validate_totp_secret(totp_secret)
         password_hash = _password_hash(password)
+        stored_secret = self._encrypt_secret(totp_secret)
         with self._lock:
             if any(user.get("username", "").casefold() == username.casefold()
                    for user in self._users.values()):
@@ -176,7 +251,7 @@ class AuthManager:
                 "password_hash": password_hash,
                 "created": datetime.now(timezone.utc).isoformat(),
                 "role": role,
-                "totp_secret": totp_secret,
+                "totp_secret": stored_secret,
             }
             self._save_users()
             return user_id
@@ -212,7 +287,7 @@ class AuthManager:
             if not user or not _verify_password(password, user.get("password_hash", "")):
                 return None
             if user.get("role") in MFA_ROLES:
-                secret = user.get("totp_secret")
+                secret = self._decrypt_secret(user.get("totp_secret"))
                 if not secret or not verify_totp(secret, otp):
                     return None
             if not user["password_hash"].startswith(PASSWORD_HASH_PREFIX):
@@ -260,7 +335,10 @@ class AuthManager:
                 del self._sessions[token_hash]
                 self._save_sessions()
                 return None
-            return self._users.get(session.get("user_id"))
+            user = self._users.get(session.get("user_id"))
+            if user and user.get("disabled"):
+                return None
+            return user
 
     def csrf_valid(self, token: str, supplied: str) -> bool:
         expected = self.session_csrf(token)
@@ -286,3 +364,44 @@ class AuthManager:
     def list_users(self) -> list:
         with self._lock:
             return [self.public_user(user) for user in self._users.values()]
+
+    def set_password(self, user_id: str, new_password: str) -> bool:
+        with self._lock:
+            user = self._users.get(user_id)
+            if not user:
+                return False
+            user["password_hash"] = _password_hash(new_password)
+            # Invalidate sessions for this user.
+            for token_hash, session in list(self._sessions.items()):
+                if session.get("user_id") == user_id:
+                    del self._sessions[token_hash]
+            self._save_users()
+            self._save_sessions()
+            return True
+
+    def deactivate_user(self, user_id: str) -> bool:
+        with self._lock:
+            user = self._users.get(user_id)
+            if not user:
+                return False
+            user["disabled"] = True
+            for token_hash, session in list(self._sessions.items()):
+                if session.get("user_id") == user_id:
+                    del self._sessions[token_hash]
+            self._save_users()
+            self._save_sessions()
+            return True
+
+    def activate_user(self, user_id: str) -> bool:
+        with self._lock:
+            user = self._users.get(user_id)
+            if not user:
+                return False
+            user["disabled"] = False
+            self._save_users()
+            return True
+
+    def is_disabled(self, user_id: str) -> bool:
+        with self._lock:
+            user = self._users.get(user_id)
+            return bool(user and user.get("disabled"))

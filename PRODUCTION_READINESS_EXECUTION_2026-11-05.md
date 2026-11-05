@@ -35,3 +35,14 @@ Recovery evidence proves an interrupted action can leave a pending audit intent 
 - Independent review and Owner closure signatures remain outstanding.
 
 No P0 was closed. Commands, raw outputs, and SHA-256 values are in `evidence/production-readiness-2026-11-05/`; see `SHA256SUMS`. The authoritative register was left unchanged.
+
+## Continuation — shipment-audit recheck — 2026-11-05
+
+- `ruff check .`: passed after removing an unused import and narrowing a bare exception to `OSError` in `synthetic_data/generate_synthetic.py`.
+- `python3 -m compileall -q src scripts`: passed.
+- `python3 -m pip check`: no broken requirements.
+- `PYTHONPATH=src python3 -m pytest tests -q`: **102 passed, 31 skipped** (20.99s). Loopback HTTP tests required execution outside the restricted sandbox; the sandbox-only run failed at socket creation, not in application assertions.
+- `python3 -m pip_audit --version`: unavailable (`No module named pip_audit`); dependency vulnerability scan remains unverified.
+- Current candidate image built successfully with `docker build -f docker/Dockerfile -t compliproof:shipment-audit .` (image ID `d596fd3f288d`). A local HTTP smoke returned `{"ok": true}`; container UID was `999`, and the container was removed afterward. A separate `--network=none` build could not fetch build dependencies; this is a build-time network requirement, not an offline runtime test.
+
+No P0 was closed. Hosted CI, clean install matrix, vulnerability scan (`pip-audit` unavailable), TLS deployment, independent evidence verification, owner closure signatures and operational acceptance remain release gates. The authoritative register remains unchanged and the release decision is **NOT READY**.
