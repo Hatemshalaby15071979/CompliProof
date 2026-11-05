@@ -12,3 +12,4 @@ c80f70a43df05551d3a73023151965e0b4289399a285dabad89c2fc442adcfb1  evidence/produ
 7b39312db17eab9cec7b7c56288cba45892c1c71f4e0b64d22ddfacb4d9112c1  evidence/production-readiness-2026-11-05/package/install.log
 f37aa4452b4c63446406a4d44a040ef83e41af07537e8de2370448377840ab07  evidence/production-readiness-2026-11-05/package/cli-help.log
 877826845d91df722687c40eb517b2e3abca6bb0cdfa48520280a9513fe4ba09  evidence/production-readiness-2026-11-05/package/wheels/compliproof-0.1.0-py3-none-any.whl
+747dc474793a2f4847406640fe2abd7bf3e2efda59af6218c7651783618861b3  evidence/production-readiness-2026-11-05/history-secret-scan-precommit.json

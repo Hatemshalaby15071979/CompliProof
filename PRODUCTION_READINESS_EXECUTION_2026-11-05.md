@@ -46,3 +46,7 @@ No P0 was closed. Commands, raw outputs, and SHA-256 values are in `evidence/pro
 - Current candidate image built successfully with `docker build -f docker/Dockerfile -t compliproof:shipment-audit .` (image ID `d596fd3f288d`). A local HTTP smoke returned `{"ok": true}`; container UID was `999`, and the container was removed afterward. A separate `--network=none` build could not fetch build dependencies; this is a build-time network requirement, not an offline runtime test.
 
 No P0 was closed. Hosted CI, clean install matrix, vulnerability scan (`pip-audit` unavailable), TLS deployment, independent evidence verification, owner closure signatures and operational acceptance remain release gates. The authoritative register remains unchanged and the release decision is **NOT READY**.
+
+## History-secret scan — local precommit baseline
+
+Used the fail-closed history scanner from the Live Support security tooling against this repository's existing `HEAD`: `node ../live-support-assistant/tooling/security/scan-history-secrets.mjs HEAD --json evidence/production-readiness-2026-11-05/history-secret-scan-precommit.json`. It inspected 3/3 commits and 12,136 changed lines; all hard-category counts were zero. The 16 email-pattern review detections were synthetic `example.com` / `example.test` values. The report is checksummed in `SHA256SUMS`. The new candidate commit must be scanned again before pushing.
