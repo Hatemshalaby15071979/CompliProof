@@ -1,0 +1,5 @@
+# Preserve captured command output; trailing spaces are part of the recorded output.
+evidence/**/*.log whitespace=-blank-at-eol
+
+# Synthetic exports are emitted by csv.writer with CRLF line endings.
+synthetic_data/**/*.csv text eol=crlf
