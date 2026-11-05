@@ -6,7 +6,12 @@ readme = "README.md"
 requires-python = ">=3.10"
 license = "MIT"
 authors = [{name = "Hatem Shalaby"}]
-dependencies = ["reportlab==5.0.1", "bcrypt==5.0.0"]
+dependencies = [
+    "reportlab==5.0.1",
+    "pillow==13.0.0",
+    "charset-normalizer==3.5.2",
+    "bcrypt==5.0.0",
+]
 
 [project.scripts]
 compliproof = "compliproof.cli:main"

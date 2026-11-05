@@ -16,7 +16,10 @@ COPY src/ ./src/
 COPY dashboard/ ./dashboard/
 
 # Build and install the wheel rather than using an editable source-tree install.
-RUN pip install --no-cache-dir setuptools==78.1.1 wheel==0.46.3 -r requirements.lock.txt \
+# Build tools are installed separately: pip auto-enables --require-hashes when
+# the lockfile contains hashes, so they must not be mixed into that invocation.
+RUN pip install --no-cache-dir setuptools==78.1.1 wheel==0.46.3 \
+    && pip install --no-cache-dir --require-hashes -r requirements.lock.txt \
     && pip install --no-cache-dir --no-build-isolation --no-deps .
 
 # Create workspace directories and give the non-root user ownership

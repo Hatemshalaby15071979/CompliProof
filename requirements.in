@@ -1,0 +1,6 @@
+# Direct runtime dependencies. Regenerate the full hash-pinned closure with:
+# uv pip compile --generate-hashes --universal requirements.in --output-file requirements.lock.txt
+reportlab==5.0.1
+pillow==13.0.0
+charset-normalizer==3.5.2
+bcrypt==5.0.0

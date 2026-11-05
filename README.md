@@ -44,9 +44,10 @@ and the checksummed [`evidence bundle`](./evidence/production-readiness-2026-11-
   mode-restricted SQLite file and is coordinated across processes. Privileged TOTP secrets are
   stored in the private workspace; account recovery, credential rotation, encrypted TOTP key
   operations, and multi-process session coordination are not implemented.
-- **Deployment/supply chain:** local builds do not prove CI, hash-locked dependencies, a
-  digest-pinned base image, or a customer environment. The included CI workflow has not been
-  executed from GitHub in this local-only workflow.
+- **Deployment/supply chain:** the runtime dependency set is now hash-locked and the Docker
+  base image is digest-pinned. Local gates do not prove a hosted GitHub Actions run or a
+  customer environment; the public GitHub repository is currently empty, so hosted CI has not
+  run on this candidate.
 - **Reconciliation scope:** duplicate/empty key handling now fails explicitly, and a regression
   compares CLI and served HTML byte-for-byte for the same stored task. A 100,000-row synthetic
   local run completed, but this is not a production capacity claim; supported file limits and
@@ -57,6 +58,20 @@ and the checksummed [`evidence bundle`](./evidence/production-readiness-2026-11-
 
 See [`AUDIT_REPORT.md`](./AUDIT_REPORT.md) for the dated assessment and
 [`REMEDIATION_PLAN.md`](./REMEDIATION_PLAN.md) for the closeout checklist.
+See [`SHIPMENT_READINESS.md`](./SHIPMENT_READINESS.md) for the current local GitHub-shipment
+checks, results, and remaining hosted-only verification.
+
+## Reproducible dependencies
+
+`requirements.in` lists direct runtime dependencies. `requirements.lock.txt` pins the
+resolved runtime set and includes SHA-256 hashes for supported platform artifacts. Update it
+with:
+
+```bash
+uv pip compile --generate-hashes --universal requirements.in --output-file requirements.lock.txt
+python -m pip install -r requirements.lock.txt
+python -m pip install --no-deps .
+```
 
 ## Local development
 
@@ -108,6 +123,8 @@ the container port directly. Non-loopback server bindings require
 `COMPLIPROOF_SECURE_COOKIES=1`.
 
 ```bash
+python -m pip install -r requirements.lock.txt
+python -m pip install --no-deps .
 docker build -f docker/Dockerfile -t compliproof:local .
 docker volume create compliproof-local-data
 docker run --rm --name compliproof-local \
