@@ -49,4 +49,8 @@ No P0 was closed. Hosted CI, clean install matrix, vulnerability scan (`pip-audi
 
 ## History-secret scan — local precommit baseline
 
-Used the fail-closed history scanner from the Live Support security tooling against this repository's existing `HEAD`: `node ../live-support-assistant/tooling/security/scan-history-secrets.mjs HEAD --json evidence/production-readiness-2026-11-05/history-secret-scan-precommit.json`. It inspected 3/3 commits and 12,136 changed lines; all hard-category counts were zero. The 16 email-pattern review detections were synthetic `example.com` / `example.test` values. The report is checksummed in `SHA256SUMS`. The new candidate commit must be scanned again before pushing.
+Used the fail-closed history scanner from the Live Support security tooling against the pre-candidate `HEAD`: `node ../live-support-assistant/tooling/security/scan-history-secrets.mjs HEAD --json evidence/production-readiness-2026-11-05/history-secret-scan-precommit.json`. It inspected 3/3 commits and 12,136 changed lines; all hard-category counts were zero. The 16 email-pattern review detections were synthetic `example.com` / `example.test` values. The report is checksummed in `SHA256SUMS`.
+
+## Final candidate history scan — 2026-11-05
+
+After committing the candidate, the same scanner inspected 5/5 commits and 14,300 changed lines. All hard-category counts were zero. The single password-assignment review hit is the fixed local-only synthetic test password in `scripts/role_smoke.py`; email-pattern hits are `callcenter.local`, `example.com`, and `example.test`. No live credential was identified. The redacted report is `evidence/production-readiness-2026-11-05/history-secret-scan-final.json`, checksummed in `SHA256SUMS`. The documentation-only commit is rescanned on the final candidate tip before push. This scan does not close the P0 release blockers above.
