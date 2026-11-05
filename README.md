@@ -24,13 +24,22 @@ register remains [`../company-os/stage-0/P0_REGISTER.yaml`](../company-os/stage-
 **seven P0 findings are still open** because Owner-signed closure evidence has not been recorded.
 There is no approved customer deployment, no production dataset, and no external product claim.
 
+**Latest local evidence — 2026-11-05:** 102 tests passed and 31 were skipped; a five-role local
+HTTP smoke passed; 100,000 synthetic rows reconciled in 4.590 seconds with the audit chain
+verifying. These results do not close any P0. The backup exercise used an unencrypted one-line
+synthetic archive, migration checking used a fixture rather than a real upgrade/rollback, and
+interrupted reconciliation was recorded but not resumed. See
+[`PRODUCTION_READINESS_EXECUTION_2026-11-05.md`](./PRODUCTION_READINESS_EXECUTION_2026-11-05.md)
+and the checksummed [`evidence bundle`](./evidence/production-readiness-2026-11-05/).
+
 ## Important remaining release gaps
 
 - **Evidence trust:** the evidence pack uses local hashes/HMACs, not an asymmetric signature or
   independent verifier. The local ledger can be rewritten by an attacker with sufficient access;
   no verified external anchor or key lifecycle is established.
-- **Operations:** backup/restore, upgrade/migration, rollback, monitoring, incident response,
-  capacity, and customer-side retention/backups have not passed operational drills.
+- **Operations:** only limited synthetic backup/restore and migration fixture checks have run;
+  encrypted backup lifecycle, real upgrade/rollback, monitoring, incident response, and
+  customer-side retention/backups remain unverified.
 - **Authentication operations:** login throttling now stores hashed IP/username keys in a
   mode-restricted SQLite file and is coordinated across processes. Privileged TOTP secrets are
   stored in the private workspace; account recovery, credential rotation, encrypted TOTP key
@@ -39,8 +48,9 @@ There is no approved customer deployment, no production dataset, and no external
   digest-pinned base image, or a customer environment. The included CI workflow has not been
   executed from GitHub in this local-only workflow.
 - **Reconciliation scope:** duplicate/empty key handling now fails explicitly, and a regression
-  compares CLI and served HTML byte-for-byte for the same stored task. Very large files and
-  recovery after interruption still need registered acceptance evidence.
+  compares CLI and served HTML byte-for-byte for the same stored task. A 100,000-row synthetic
+  local run completed, but this is not a production capacity claim; supported file limits and
+  resumption after interrupted processing remain open.
 - **Data protection:** row-level reports remain on disk for 30 days. Files are mode-restricted,
   but filesystem encryption, backup expiry, and deletion from external backups are the
   operator's responsibility.

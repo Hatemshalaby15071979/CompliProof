@@ -1,0 +1,3 @@
+[console_scripts]
+compliproof = compliproof.cli:main
+compliproof-server = compliproof.server:main

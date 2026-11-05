@@ -1,0 +1,14 @@
+usage: compliproof [-h] {reconcile,report,audit,users} ...
+
+CompliProof — prototype local reconciliation and evidence-pack tool
+
+positional arguments:
+  {reconcile,report,audit,users}
+    reconcile           Reconcile two CSV files
+    report              Generate HTML reconciliation report for a task
+                        (prototype)
+    audit               Audit log operations
+    users               Provision local user accounts
+
+options:
+  -h, --help            show this help message and exit

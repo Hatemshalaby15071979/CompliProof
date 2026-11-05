@@ -1,0 +1,6 @@
+OK role=owner
+OK role=approver
+OK role=operator
+OK role=auditor
+OK role=viewer
+ALL ROLES PASSED

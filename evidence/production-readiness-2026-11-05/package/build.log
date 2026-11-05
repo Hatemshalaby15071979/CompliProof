@@ -1,0 +1,9 @@
+Processing [LOCAL_PATH]/[REDACTED_VOLUME]/Career/cloned_repos/CompliProof
+  Preparing metadata (pyproject.toml): started
+  Preparing metadata (pyproject.toml): finished with status 'done'
+Building wheels for collected packages: compliproof
+  Building wheel for compliproof (pyproject.toml): started
+  Building wheel for compliproof (pyproject.toml): finished with status 'done'
+  Created wheel for compliproof: filename=compliproof-0.1.0-py3-none-any.whl size=59120 sha256=877826845d91df722687c40eb517b2e3abca6bb0cdfa48520280a9513fe4ba09
+  Stored in directory: /tmp/pip-ephem-wheel-cache-hjniu093/wheels/17/e5/f9/87a5369a228a6cfd449891e70efde95b9dd8747c5ead973650
+Successfully built compliproof
