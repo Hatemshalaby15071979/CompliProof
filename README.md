@@ -84,7 +84,7 @@ python -m pip install --no-deps .
 
 ## Local development
 
-Python 3.10+ is declared; the checked-in CI currently targets Python 3.11. Install from this directory, then provision an account. Privileged roles require an authenticator app.
+Python 3.11+ is required (`requires-python = ">=3.11"` in `pyproject.toml`, driven by the `pillow==13.0.0` pin); the checked-in CI targets Python 3.11–3.13. Install from this directory, then provision an account. Privileged roles require an authenticator app.
 
 ```bash
 python3 -m pip install .
