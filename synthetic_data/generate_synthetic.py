@@ -37,6 +37,11 @@ SPORTSACADEMY_FIELDS = ["id", "athlete_name", "sport", "division", "compliance_s
 SYNTHETIC_LABEL = "COMPLIPROOF_SYNTHETIC_DATA_2026-11-04"
 
 
+def default_output_dir():
+    """Return the generation directory beside this script, independent of clone location."""
+    return Path(__file__).resolve().parent
+
+
 def generate_callcenter_records(n=12):
     """Generate n deterministic CallCenter synthetic records."""
     departments = ["support", "billing", "technical", "management", "compliance"]
@@ -145,7 +150,7 @@ def generate_tenant_manifest(tenant_name, records, fields, row_hashes):
 
 
 def main():
-    output_dir = Path("[LOCAL_PATH]/[REDACTED_VOLUME]/Career/cloned_repos/CompliProof/synthetic_data")
+    output_dir = default_output_dir()
     output_dir.mkdir(parents=True, exist_ok=True)
 
     # Generate CallCenter data
