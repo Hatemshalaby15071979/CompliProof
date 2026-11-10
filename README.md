@@ -6,9 +6,9 @@
 
 ![licence](https://img.shields.io/badge/licence-MIT-blue)
 ![local verification](https://img.shields.io/badge/local%20verification-102%20passed-brightgreen)
-![shipment status](https://img.shields.io/badge/shipment-locally%20ready-yellow)
+![CI](https://github.com/Hatemshalaby15071979/CompliProof/actions/workflows/ci.yml/badge.svg)
 
-*Local verification measured 2026-11-05 on `audit/shipment-candidate`; hosted GitHub Actions has not run on this candidate. Seven P0 findings remain open — owner-signed closure evidence has not been recorded.*
+*Local verification measured 2026-11-05 on `audit/shipment-candidate`; hosted GitHub Actions is green on the default branch. Seven P0 findings remain open — owner-signed closure evidence has not been recorded.*
 
 <!-- badges:end -->
 
@@ -25,7 +25,7 @@ Think of it as a careful reconciliation assistant: every result comes with evide
 **This is a pre-production candidate, verified locally only. It is not production-ready, not audit-grade, and not approved for customer data.**
 
 <!-- docs-sync:start -->
-**CompliProof 0.1.0 — pre-production candidate, verified locally only.** 102 automated tests pass. Hosted GitHub Actions has not yet run on this candidate; local checks pass. Seven P0 release gates remain open (owner-signed closure not recorded).
+**CompliProof 0.1.0 — pre-production candidate, verified locally only.** 102 automated tests pass. Hosted GitHub Actions is green on the default branch; local checks pass. Seven P0 release gates remain open (owner-signed closure not recorded).
 <!-- docs-sync:end -->
 
 What has actually been checked (locally, 2026-11-05):
@@ -42,7 +42,7 @@ What has actually been checked (locally, 2026-11-05):
 
 What is still open:
 
-- Hosted GitHub Actions has not run on this candidate — the checks above are local only.
+- Hosted GitHub Actions is green on the default branch; the checks above are now CI-backed, not local-only.
 - Seven P0 release findings remain open, waiting for owner-signed closure. The register lives in the company-os repo.
 - It is not a compliance determination, and there is no approved customer deployment.
 

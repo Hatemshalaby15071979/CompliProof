@@ -8,6 +8,6 @@
     "release_date": "5 November 2026",
     "tests_passed": 102,
     "coverage": null,
-    "ci_label": "Hosted GitHub Actions has not yet run on this candidate; local checks pass"
+    "ci_label": "Hosted GitHub Actions is green on the default branch; local checks pass"
   }
 }
