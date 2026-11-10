@@ -1,0 +1,13 @@
+{
+  "name": "CompliProof",
+  "repo": "Hatemshalaby15071979/CompliProof",
+  "status_template": "**CompliProof @DOCS_SYNC_VERSION@ — pre-production candidate, verified locally only.** @DOCS_SYNC_TESTS@ automated tests pass@COVERAGE_FRAGMENT@. @DOCS_SYNC_CI@. Seven P0 release gates remain open (owner-signed closure not recorded).",
+  "status_template_html": "<p class=\"status\"><strong>CompliProof @DOCS_SYNC_VERSION@ — pre-production candidate, verified locally only.</strong> @DOCS_SYNC_TESTS@ automated tests pass@COVERAGE_FRAGMENT@. @DOCS_SYNC_CI@. Seven P0 release gates remain open (owner-signed closure not recorded).</p>",
+  "facts": {
+    "version": "0.1.0",
+    "release_date": "5 November 2026",
+    "tests_passed": 102,
+    "coverage": null,
+    "ci_label": "Hosted GitHub Actions has not yet run on this candidate; local checks pass"
+  }
+}
