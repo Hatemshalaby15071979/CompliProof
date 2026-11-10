@@ -1,0 +1,22 @@
+name: docs-sync
+
+# Keep the visitor-facing status block (version, release date, tests, coverage,
+# CI) in README.md / index.html current the moment a release ships. Trigger is
+# release-only — a plain push never touches the docs. Opens a PR for review;
+# never commits straight to the default branch.
+on:
+  release:
+    types: [published]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Sync docs status block
+        uses: Hatemshalaby15071979/Hatemshalaby15071979/.github/actions/docs-sync@master
+        with:
+          profile: _docs_profile.json
