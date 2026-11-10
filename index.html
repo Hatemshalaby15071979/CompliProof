@@ -14,7 +14,7 @@
 <nav><strong>CompliProof</strong><a href="https://github.com/Hatemshalaby15071979/CompliProof">View source on GitHub</a></nav>
 <header><span class="tag">Local reconciliation &amp; reporting</span><h1>Reconcile two exports. Prove what happened.</h1><p class="lead">CompliProof is a local tool that reconciles two CSV exports by their shared key, shows the matched / A-only / B-only rows, and produces HTML, PDF and CSV reports — each backed by a local evidence pack and a hash-chained audit trail. It runs on your machine; it is not a cloud service.</p>
 <!-- docs-sync:start -->
-<p class="status"><strong>CompliProof 0.1.0 — pre-production candidate, verified locally only.</strong> 102 automated tests pass. Hosted GitHub Actions has not yet run on this candidate; local checks pass. Seven P0 release gates remain open (owner-signed closure not recorded).</p>
+<p class="status"><strong>CompliProof 0.1.0 — pre-production candidate, verified locally only.</strong> 102 automated tests pass. Hosted GitHub Actions is green on the default branch; local checks pass. Seven P0 release gates remain open (owner-signed closure not recorded).</p>
 <!-- docs-sync:end --></header>
 
 <section><h2>What it is</h2><p class="lead">CompliProof takes <code>system_a.csv</code> and <code>system_b.csv</code>, reconciles them by <code>id</code>, and reports the union of keys — what matched, what was only in A, and what was only in B. Every report route requires authentication, uploads are temporary and removed after reconciliation, and each result's hash is recorded in a local audit ledger before it is served.</p></section>
