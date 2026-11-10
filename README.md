@@ -22,6 +22,10 @@
 
 ## GitHub shipment status (2026-11-06)
 
+<!-- docs-sync:start -->
+**CompliProof 0.1.0 — pre-production candidate, verified locally only.** 102 automated tests pass. Hosted GitHub Actions has not yet run on this candidate; local checks pass. Seven P0 release gates remain open (owner-signed closure not recorded).
+<!-- docs-sync:end -->
+
 The intended public repository is [Hatemshalaby15071979/CompliProof](https://github.com/Hatemshalaby15071979/CompliProof). This checkout has been pushed to `audit/shipment-candidate`; hosted GitHub Actions verification has not yet been observed on the pushed SHA. Local CI-equivalent checks pass: **102 tests passed, 31 skipped** (conditional scenario/scale cases, not failures), bandit no findings, `pip-audit` clean on the hash-locked runtime set, hash install passes in a clean venv, wheel builds (`compliproof-0.1.0-py3-none-any.whl`), Docker builds and the loopback smoke returns `{"ok": true}`. See [`SHIPMENT_READINESS.md`](SHIPMENT_READINESS.md) for exact check outcomes and remaining hosted-only verification.
 
 ## One-line identity
