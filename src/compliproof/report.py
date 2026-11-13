@@ -21,6 +21,8 @@ v1 behavior (replaces the defective prototype reporter):
   result (totals, rows, pack) from the ledger, and is the single code path
   used by the CLI and the server, guaranteeing identical totals and content.
 - CSV export parses with a standard reader and contains real source values.
+  Every exported cell is sanitised against spreadsheet formula injection
+  (leading ``=``, ``+``, ``-``, ``@``, TAB or CR).
 
 The output is not buyer-ready and does not establish that the report matches
 an externally anchored chain.
@@ -70,10 +72,22 @@ def _pct(numerator: int, denominator: int) -> str:
     return f"{(numerator / denominator) * 100:.1f}%"
 
 
+_CSV_INJECTION_PREFIXES = ("=", "+", "-", "@", "\t", "\r")
+
+
 def _csv_safe(value: Any) -> Any:
-    if not isinstance(value, str):
+    """Neutralise spreadsheet formula injection in one CSV cell.
+
+    A cell is escaped with a leading apostrophe when its first character is
+    ``=``, ``+``, ``-``, ``@``, TAB or CR, or when leading whitespace is
+    followed by one of ``= + - @``. This is the single cell sanitiser used by
+    every CSV export path (:meth:`ReportGenerator.to_csv`).
+    """
+    if not isinstance(value, str) or not value:
         return value
-    if value.lstrip(" \t\r\n").startswith(("=", "+", "-", "@")):
+    if value[0] in _CSV_INJECTION_PREFIXES:
+        return "'" + value
+    if value.lstrip(" \t\r\n")[:1] in ("=", "+", "-", "@"):
         return "'" + value
     return value
 
@@ -836,7 +850,7 @@ class ReportGenerator:
             "protocol": "prototype, not audit-grade; local hash only",
         }
         for name, val in summary.items():
-            w.writerow({"key": name, "status": "summary", "summary_value": val})
+            w.writerow({"key": name, "status": "summary", "summary_value": _csv_safe(val)})
 
         csv_text = buf.getvalue()
         self._audit_report_generation(result, csv_text.encode("utf-8"), "csv")
