@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "description": "Exact-match exception registry for tooling/security/scan_history_secrets.py. Every entry names the category, the SHA-256 of the matched value or added line (never the value itself), and why it is not a credential. Email matches are exempted by reserved domain instead of by value. Removing an entry makes the scanner fail closed.",
+  "email_domains": {
+    "callcenter.local": "synthetic tenant domain used only by repository fixtures",
+    "example.com": "RFC 2606 example domain",
+    "example.test": "RFC 2606 example domain"
+  },
+  "line_exceptions": [],
+  "value_exceptions": [
+    {
+      "category": "password-assignment",
+      "value_sha256": "ed26d56237be9e982848498f32f024afa4359fcbfe138089d2daa06745b9fb37",
+      "reason": "fixed synthetic test credential in scripts/role_smoke.py, used only to create accounts on a loopback-only test server"
+    }
+  ]
+}

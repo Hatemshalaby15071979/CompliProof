@@ -57,6 +57,15 @@ hosted GitHub Actions. No push, tag, release, or publication was made.
 
 ## Secret-history scan
 
+> **Superseded 2026-11-13 (finding HI-11).** The scan recorded below covered
+> only 5 commits of a history that already contained 29, and reported
+> `hardCounts` of zero while the same report listed one password-assignment
+> and 42 email matches. Those counts were review categories, not hard
+> categories, but the summary wording hid them. The current, fail-closed scan
+> is described after this historical record.
+
+Historical record (2026-11-06, superseded):
+
 - Scope: full reachable history (`git log --all -p`, 7 commits) plus
   `git grep` over tracked files, for private-key blocks, AWS/GitHub/API-key
   shapes, and live secret prefixes.
@@ -69,6 +78,26 @@ hosted GitHub Actions. No push, tag, release, or publication was made.
   `*.pem`/`*.key`, `dist/`, `build/`, and `/helix-prime/` + `/helix-education/`
   are gitignored and untracked. Tracked `evidence/*.log` files are recorded
   run logs, not credentials (grep-verified).
+
+Current scan (2026-11-13, fail-closed, required CI gate):
+
+- Command: `python3 tooling/security/scan_history_secrets.py --json scan.json`
+  over `git log --all -p -m` — every reachable commit on every ref, merge
+  diffs expanded.
+- Scope measured 2026-11-13 on the remediation branch: 30/30 commits,
+  17,609 added lines inspected.
+- Real counts: 92 email-address matches (all in reserved `example.com`,
+  `example.test` or synthetic `callcenter.local` domains), 1
+  password-assignment match (the fixed synthetic test credential in
+  `scripts/role_smoke.py`), and 0 hard-category matches.
+- Every review-category match is either exempted by a documented rule or the
+  gate fails. Exceptions are exact (SHA-256 of the value or line, never the
+  value) and live in `tooling/security/history-scan-exceptions.json`; removing
+  one makes the scan fail closed.
+- The scan runs as the `history-scan` job in `.github/workflows/ci.yml`, and
+  the release gate requires it. The full JSON report is uploaded as a CI
+  artifact on every run; it is not committed, because it is regenerated
+  evidence rather than source.
 
 ## Remaining limitations (not waived)
 
