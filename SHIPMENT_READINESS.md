@@ -84,12 +84,14 @@ Current scan (2026-11-13, fail-closed, required CI gate):
 - Command: `python3 tooling/security/scan_history_secrets.py --json scan.json`
   over `git log --all -p -m` — every reachable commit on every ref, merge
   diffs expanded.
-- Scope measured 2026-11-13 on the remediation branch: 30/30 commits,
-  17,609 added lines inspected.
-- Real counts: 92 email-address matches (all in reserved `example.com`,
-  `example.test` or synthetic `callcenter.local` domains), 1
-  password-assignment match (the fixed synthetic test credential in
-  `scripts/role_smoke.py`), and 0 hard-category matches.
+- Scope measured 2026-11-13 on the remediation branch: 35/35 commits,
+  18,436 added lines inspected. Counts grow with history; the CI artifact is
+  the authoritative report for each run.
+- Real counts at that snapshot: 1 hard-category match (a fake AWS-shaped
+  fixture in the scanner's own test, exempted by exact line hash), 94
+  email-address matches (all in reserved `example.com`, `example.test` or
+  synthetic `callcenter.local` domains) and 2 occurrences of the fixed
+  synthetic test credential in `scripts/role_smoke.py`. Unresolved matches: 0.
 - Every review-category match is either exempted by a documented rule or the
   gate fails. Exceptions are exact (SHA-256 of the value or line, never the
   value) and live in `tooling/security/history-scan-exceptions.json`; removing

@@ -6,7 +6,13 @@
     "example.com": "RFC 2606 example domain",
     "example.test": "RFC 2606 example domain"
   },
-  "line_exceptions": [],
+  "line_exceptions": [
+    {
+      "category": "aws-access-key",
+      "line_sha256": "a92b95bd3c8acd3dc8f61575f0d0bf626aa6dc0194328d527c88dab727551d10",
+      "reason": "fake AWS-shaped fixture ('AKIA' + 'ABCDEFGHIJKLMNOP') written literally in tests/test_history_secret_scan.py at commit a796ab3; it is not a credential and the current tree builds the fixture at runtime instead"
+    }
+  ],
   "value_exceptions": [
     {
       "category": "password-assignment",
