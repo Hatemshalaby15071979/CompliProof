@@ -8,6 +8,13 @@ build/
 /helix-prime/
 /helix-education/
 
+# Evidence run artefacts: the installed-wheel tree duplicates src/ and the
+# wheels are rebuilt on demand. Logs, JSON and checksum manifests stay tracked
+# as the single canonical evidence copy. Attach artefacts to a release if one
+# is ever published; do not commit them.
+evidence/**/package/install/
+evidence/**/package/wheels/
+
 # Python
 __pycache__/
 *.py[cod]

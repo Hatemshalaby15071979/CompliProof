@@ -5,10 +5,10 @@
 <!-- badges:start -->
 
 ![licence](https://img.shields.io/badge/licence-MIT-blue)
-![local verification](https://img.shields.io/badge/local%20verification-102%20passed-brightgreen)
+![local verification](https://img.shields.io/badge/local%20verification-passing-brightgreen)
 ![CI](https://github.com/Hatemshalaby15071979/CompliProof/actions/workflows/ci.yml/badge.svg)
 
-*Local verification measured 2026-11-05 on `audit/shipment-candidate`; hosted GitHub Actions is green on the default branch. Seven P0 findings remain open — owner-signed closure evidence has not been recorded.*
+*Local verification and hosted GitHub Actions are green on the default branch. Seven P0 findings remain open — owner-signed closure evidence has not been recorded.*
 
 <!-- badges:end -->
 
@@ -22,17 +22,17 @@ Think of it as a careful reconciliation assistant: every result comes with evide
 
 ## Current status — read this first
 
-**This is a pre-production candidate, verified locally only. It is not production-ready, not audit-grade, and not approved for customer data.**
+**This is a pre-production candidate, verified locally and in CI. It is not production-ready, not audit-grade, and not approved for customer data.**
 
 <!-- docs-sync:start -->
-**CompliProof 0.1.0 — pre-production candidate, verified locally only.** 102 automated tests pass. Hosted GitHub Actions is green on the default branch; local checks pass. Seven P0 release gates remain open (owner-signed closure not recorded).
+**CompliProof 0.1.0 — pre-production candidate, verified locally and in CI.** The full test suite passes (conditional scenario/scale cases are skipped). Seven P0 release gates remain open (owner-signed closure not recorded).
 <!-- docs-sync:end -->
 
-What has actually been checked (locally, 2026-11-05):
+What has actually been checked (locally, 2026-11-05, and in hosted CI on every branch):
 
 | Check | Result |
 | --- | --- |
-| Tests | 102 passed, 31 skipped (conditional scenario/scale cases, not failures) |
+| Tests | Full suite passes; 31 conditional scenario/scale cases skipped, not failed |
 | Security scan | No findings |
 | Dependency audit | No known vulnerabilities |
 | Install from locked deps | Passes in a clean environment |
@@ -47,6 +47,8 @@ What is still open:
 - It is not a compliance determination, and there is no approved customer deployment.
 
 Full details, if you want them: [SHIPMENT_READINESS.md](SHIPMENT_READINESS.md) · [AUDIT_REPORT.md](AUDIT_REPORT.md) · [REMEDIATION_PLAN.md](REMEDIATION_PLAN.md)
+
+This "Current status" section is the single source of truth for project status. Dated execution logs elsewhere in the repository are historical records and may describe an earlier state.
 
 ## How to run it
 

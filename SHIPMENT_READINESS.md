@@ -57,6 +57,15 @@ hosted GitHub Actions. No push, tag, release, or publication was made.
 
 ## Secret-history scan
 
+> **Superseded 2026-11-13 (finding HI-11).** The scan recorded below covered
+> only 5 commits of a history that already contained 29, and reported
+> `hardCounts` of zero while the same report listed one password-assignment
+> and 42 email matches. Those counts were review categories, not hard
+> categories, but the summary wording hid them. The current, fail-closed scan
+> is described after this historical record.
+
+Historical record (2026-11-06, superseded):
+
 - Scope: full reachable history (`git log --all -p`, 7 commits) plus
   `git grep` over tracked files, for private-key blocks, AWS/GitHub/API-key
   shapes, and live secret prefixes.
@@ -70,16 +79,58 @@ hosted GitHub Actions. No push, tag, release, or publication was made.
   are gitignored and untracked. Tracked `evidence/*.log` files are recorded
   run logs, not credentials (grep-verified).
 
+Current scan (2026-11-13, fail-closed, required CI gate):
+
+- Command: `python3 tooling/security/scan_history_secrets.py --json scan.json`
+  over `git log --all -p -m` — every reachable commit on every ref, merge
+  diffs expanded.
+- Scope measured 2026-11-13 on the remediation branch: 35/35 commits,
+  18,436 added lines inspected. Counts grow with history; the CI artifact is
+  the authoritative report for each run.
+- Real counts at that snapshot: 1 hard-category match (a fake AWS-shaped
+  fixture in the scanner's own test, exempted by exact line hash), 94
+  email-address matches (all in reserved `example.com`, `example.test` or
+  synthetic `callcenter.local` domains) and 2 occurrences of the fixed
+  synthetic test credential in `scripts/role_smoke.py`. Unresolved matches: 0.
+- Every review-category match is either exempted by a documented rule or the
+  gate fails. Exceptions are exact (SHA-256 of the value or line, never the
+  value) and live in `tooling/security/history-scan-exceptions.json`; removing
+  one makes the scan fail closed.
+- The scan runs as the `history-scan` job in `.github/workflows/ci.yml`, and
+  the release gate requires it. The full JSON report is uploaded as a CI
+  artifact on every run; it is not committed, because it is regenerated
+  evidence rather than source.
+
+## Provenance and signature status (2026-11-13, finding HI-07)
+
+- No signature exists in this repository or its history: there is no `.sig`,
+  `.pem`, `.key`, certificate, or keypair, and no human-supplied key has been
+  provided.
+- Evidence packs and answer keys are **hash-consistent, not signed**. A pack
+  carries a plain local SHA-256 digest; an answer key carries an HMAC-SHA256
+  digest under a 32-byte integrity key that the tool generates itself when the
+  key file is absent. Anyone who can read that key file can recompute the
+  digest, so it does not authenticate an author, an approver, or a reviewer.
+  The code names this an `integrity_key`, never a signing key.
+- This readiness record, the execution logs, and the status claims in them
+  were written by the same engineering session that made the changes. They are
+  self-assessed. No independent reviewer has signed them, and no closure
+  evidence is signed. No signature claim is made here and none may be added
+  until a human supplies a key and a key lifecycle exists.
+- The authoritative current status is the "Current status" section of
+  `README.md`; the dated execution logs in this repository are historical.
+
 ## Remaining limitations (not waived)
 
-- Hosted GitHub Actions, branch protection, repository visibility, and remote
-  state were **not verified** (no push was made or authorized).
+- Hosted GitHub Actions is verified green on `audit/shipment-candidate`
+  (CI run 42834746842, 2026-11-10). Branch protection, repository visibility,
+  and remote state outside that run were **not verified** from this clone.
 - Actions are tag-pinned, not SHA-pinned.
 - Pre-production gates remain open: authentication recovery/credential
   rotation, independent security review, customer data and operating
   controls, and production deployment acceptance. Local checks use synthetic
   data only and establish reproducible behavior on synthetic inputs.
 
-**Status: locally shipment-ready** for a first push, with hosted-only
-verification and the product gates above still open. Nothing was pushed,
-published, released, or deployed.
+**Status: pushed to GitHub, with hosted CI green on `audit/shipment-candidate`;
+not production-ready.** The hosted-only verification and product gates above
+remain open. Nothing was published, released, or deployed.

@@ -1,9 +1,10 @@
-a6d6d1749b04845b0a83ebdb6e1f3e3665686e0a67df973c8ab786bad063ff1c  evidence/production-readiness-2026-11-04/pytest.log
 c91dad03511eb111dba9f317cdb7962c64ec389c7d259de488e167c78aac1b31  evidence/production-readiness-2026-11-04/audit-regression.log
-82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18  evidence/production-readiness-2026-11-04/ruff-targeted.log
-ed963af97fe5ec11d3ed503389f02fb46e351cc7615ec0720a4a78d003313132  evidence/production-readiness-2026-11-04/ruff-full.log
-e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  evidence/production-readiness-2026-11-04/compile.log
-9261363b733079a641c2e4cc9bc46ffa1d8336945a87f807b6cf68847dbc9b09  evidence/production-readiness-2026-11-04/pip-check.log
 f37aa4452b4c63446406a4d44a040ef83e41af07537e8de2370448377840ab07  evidence/production-readiness-2026-11-04/cli-help.log
-95654c632ad2ace3414a8d2e81dbd36f887c5ceea3bcd34936e28efec6bcc868  evidence/production-readiness-2026-11-04/docker-info.log
+e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  evidence/production-readiness-2026-11-04/compile.log
+e7996162add6f7b8e2e508379419ea9247190a96d01e16f82d5112609ad8dab7  evidence/production-readiness-2026-11-04/docker-info.log
+9261363b733079a641c2e4cc9bc46ffa1d8336945a87f807b6cf68847dbc9b09  evidence/production-readiness-2026-11-04/pip-check.log
+a6d6d1749b04845b0a83ebdb6e1f3e3665686e0a67df973c8ab786bad063ff1c  evidence/production-readiness-2026-11-04/pytest.log
+ed963af97fe5ec11d3ed503389f02fb46e351cc7615ec0720a4a78d003313132  evidence/production-readiness-2026-11-04/ruff-full.log
+82b3e6a6c090a57601d22943bd23fca9218d1031dbe5a7b754092f9a156b4f18  evidence/production-readiness-2026-11-04/ruff-targeted.log
+84405e5e75c11996e8398bb7a626168f81c2849465220597721b1388bbef50c9  evidence/production-readiness-2026-11-04/ruff.log
 a5eac1a64d9e7e2cf2952803948980e01c655b6a9cd5672fd8de6c2fb0dde5c3  evidence/production-readiness-2026-11-04/unavailable-tools.txt

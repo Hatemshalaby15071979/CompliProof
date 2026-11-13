@@ -163,7 +163,7 @@ def test_verify_passes_for_untampered_store():
 
 
 def test_verify_fails_when_data_tampered():
-    """Tampering with the stored data file (without the signing key) makes
+    """Tampering with the stored data file (without the integrity key) makes
     verify() return False."""
     with tempfile.TemporaryDirectory() as tmp:
         data_path = Path(tmp) / "sealed_keys.jsonl"
@@ -173,17 +173,17 @@ def test_verify_fails_when_data_tampered():
 
         # Tamper: rewrite the data file with different required_keywords
         # but keep the same sealed_hash (simulating an attacker who can edit
-        # the data file but does not have the signing key).
+        # the data file but does not have the integrity key).
         lines = data_path.read_text().strip().split("\n")
         rec = json.loads(lines[0])
         rec["required_keywords"] = ["tampered", "fake"]
         lines[0] = json.dumps(rec, ensure_ascii=False, sort_keys=True)
         data_path.write_text("\n".join(lines) + "\n")
 
-        # Reload and verify — must fail because the signing key is unknown.
+        # Reload and verify — must fail because the integrity key is unknown.
         store2 = SealedAnswerKeyStore(data_path)
         assert store2.verify() is False, (
-            "Tampered data must fail verification without the signing key"
+            "Tampered data must fail verification without the integrity key"
         )
 
 
@@ -209,19 +209,19 @@ def test_verify_fails_when_hash_tampered():
         )
 
 
-def test_signing_key_stored_separately():
-    """The signing key must be stored in a sibling .sealing_key file, not
+def test_integrity_key_stored_separately():
+    """The integrity key must be stored in a sibling .integrity_key file, not
     in the same file as the sealed records."""
     with tempfile.TemporaryDirectory() as tmp:
         data_path = Path(tmp) / "sealed_keys.jsonl"
         store = SealedAnswerKeyStore(data_path)
-        key_path = Path(tmp) / ".sealing_key"
-        assert key_path.exists(), "Signing key must be persisted to disk"
-        assert len(key_path.read_bytes()) == 32, "Signing key must be 32 bytes"
+        key_path = Path(tmp) / ".integrity_key"
+        assert key_path.exists(), "Integrity key must be persisted to disk"
+        assert len(key_path.read_bytes()) == 32, "Integrity key must be 32 bytes"
 
 
-def test_different_signing_keys_produce_different_hashes():
-    """Two stores with different signing keys produce different sealed hashes
+def test_different_integrity_keys_produce_different_hashes():
+    """Two stores with different integrity keys produce different sealed hashes
     for the same answer key data."""
     with tempfile.TemporaryDirectory() as tmp_a:
         with tempfile.TemporaryDirectory() as tmp_b:
@@ -238,7 +238,7 @@ def test_different_signing_keys_produce_different_hashes():
             rec_a = json.loads(Path(path_a).read_text().strip().split("\n")[0])
             rec_b = json.loads(Path(path_b).read_text().strip().split("\n")[0])
             assert rec_a["sealed_hash"] != rec_b["sealed_hash"], (
-                "Different signing keys must produce different sealed hashes"
+                "Different integrity keys must produce different sealed hashes"
             )
 
 
@@ -248,7 +248,7 @@ def test_malformed_sealed_key_record_fails_closed():
         data_path.write_text("{invalid json}\n", encoding="utf-8")
 
         with pytest.raises(ValueError, match="line 1"):
-            SealedAnswerKeyStore(data_path, signing_key=b"k" * 32)
+            SealedAnswerKeyStore(data_path, integrity_key=b"k" * 32)
 
 
 # ── ScoringResult seal (metadata tamper detection) ─────────────────────────

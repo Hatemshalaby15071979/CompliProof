@@ -49,6 +49,17 @@ No P0 was closed. Hosted CI, clean install matrix, vulnerability scan (`pip-audi
 
 ## History-secret scan — local precommit baseline
 
+> **Superseded 2026-11-13 (finding HI-11).** The two scan records below are
+> kept as history but are no longer the published result. They covered 3 and
+> then 5 commits of a history that now contains 30, and the "all hard-category
+> counts were zero" wording hid the review-category matches (1
+> password-assignment, 42 email addresses) that the same reports contained.
+> The current fail-closed scan — 35/35 commits, 18,436 added lines, 1 hard
+> match (a fake AWS-shaped fixture, exempted by exact line hash), 94 email
+> matches all in reserved domains and 2 occurrences of the synthetic test
+> credential, unresolved 0 — is documented in `SHIPMENT_READINESS.md` and
+> enforced by the `history-scan` CI job.
+
 Used the fail-closed history scanner from the Live Support security tooling against the pre-candidate `HEAD`: `node ../live-support-assistant/tooling/security/scan-history-secrets.mjs HEAD --json evidence/production-readiness-2026-11-05/history-secret-scan-precommit.json`. It inspected 3/3 commits and 12,136 changed lines; all hard-category counts were zero. The 16 email-pattern review detections were synthetic `example.com` / `example.test` values. The report is checksummed in `SHA256SUMS`.
 
 ## Final candidate history scan — 2026-11-05

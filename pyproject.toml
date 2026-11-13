@@ -37,6 +37,7 @@ select = ["E4", "E7", "E9", "F", "I", "B", "S"]
 [tool.ruff.lint.per-file-ignores]
 "tests/*" = ["S101", "S603", "S607", "S608", "S105", "S110", "B017", "E402", "F841"]
 "scripts/*" = ["S", "B", "I", "E402", "F401", "F841", "S101", "S105", "S310", "S603", "S607", "S608", "S110", "B007"]
+"tooling/*" = ["S603", "S607"]
 
 [tool.pytest.ini_options]
 markers = ["ui_integration: tests that exercise the user interface"]

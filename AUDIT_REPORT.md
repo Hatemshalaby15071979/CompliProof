@@ -139,7 +139,7 @@ Commands completed against this candidate:
 | Hosted GitHub CI | **Not run**; no remote is configured |
 
 These are local engineering checks, not P0 closure evidence. The test interpreter was Python 3.14;
-the declared minimum Python 3.10 and full supported-version matrix were not exercised. A green
+the declared minimum Python 3.11 and the full supported-version matrix were not exercised. A green
 local test suite does not close a P0 without its registered evidence and Owner sign-off.
 
 ## Release decision
