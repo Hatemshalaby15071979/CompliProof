@@ -99,6 +99,25 @@ Current scan (2026-11-13, fail-closed, required CI gate):
   artifact on every run; it is not committed, because it is regenerated
   evidence rather than source.
 
+## Provenance and signature status (2026-11-13, finding HI-07)
+
+- No signature exists in this repository or its history: there is no `.sig`,
+  `.pem`, `.key`, certificate, or keypair, and no human-supplied key has been
+  provided.
+- Evidence packs and answer keys are **hash-consistent, not signed**. A pack
+  carries a plain local SHA-256 digest; an answer key carries an HMAC-SHA256
+  digest under a 32-byte integrity key that the tool generates itself when the
+  key file is absent. Anyone who can read that key file can recompute the
+  digest, so it does not authenticate an author, an approver, or a reviewer.
+  The code names this an `integrity_key`, never a signing key.
+- This readiness record, the execution logs, and the status claims in them
+  were written by the same engineering session that made the changes. They are
+  self-assessed. No independent reviewer has signed them, and no closure
+  evidence is signed. No signature claim is made here and none may be added
+  until a human supplies a key and a key lifecycle exists.
+- The authoritative current status is the "Current status" section of
+  `README.md`; the dated execution logs in this repository are historical.
+
 ## Remaining limitations (not waived)
 
 - Hosted GitHub Actions, branch protection, repository visibility, and remote
