@@ -1,0 +1,25 @@
+version: 2
+
+# Free dependency + workflow maintenance. No paid GitHub add-ons used.
+# Ecosystems detected from repository manifests:
+#   - pip             -> pyproject.toml / requirements.lock.txt
+#   - github-actions  -> .github/workflows
+updates:
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    groups:
+      pip-minor-patch:
+        applies-to: "version-updates"
+        update-types: ["minor", "patch"]
+
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      actions-minor-patch:
+        applies-to: "version-updates"
+        update-types: ["minor", "patch"]

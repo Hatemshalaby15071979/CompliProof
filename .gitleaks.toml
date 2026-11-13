@@ -1,0 +1,30 @@
+# Minimal gitleaks configuration — free secret-scanning baseline.
+# Extends the default gitleaks rules, with a narrow allowlist for the
+# synthetic / placeholder data used in tests, docs and fixtures so the
+# baseline scan does not produce noise on intentionally-fake values.
+
+title = "gitleaks baseline config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Synthetic fixtures and placeholder values used in tests/docs"
+paths = [
+  "(?i)tests?/",
+  "(?i)examples?/",
+  "(?i)fixtures?/",
+  "(?i)\\.github/",
+  "(?i)docs?/",
+  "(?i)synthetic_data/",
+]
+regexes = [
+  # all-zeros UUID (obvious placeholder)
+  '''[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-000000000000''',
+  # CHANGEME placeholder
+  '''(?i)changeme''',
+  # example.com / example.org / example.net domains
+  '''(?i)example\\.(com|org|net)''',
+  # placeholder secrets assigned to a test/test123 value
+  '''(?i)(password|passwd|secret|token|api_?key|access_?key)\\s*[:=]\\s*["']?(test|test123)["']?''',
+]
