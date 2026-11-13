@@ -1,5 +1,12 @@
 name: CI
 
+# Branch policy: this repository's default branch is `audit/shipment-candidate`
+# (a non-standard name, not `main` or `master`). CI runs on push and
+# pull_request to ALL branches. This is a verification gate only — a green run
+# is not a release or shipment decision. Note: git history is NOT rewritten here;
+# changing history requires the owner's explicit G2 authorization. Commit
+# messages that assert "[gate: ... pass]" are not evidence; only this workflow's
+# output is.
 on:
   push:
     branches: [ "**" ]

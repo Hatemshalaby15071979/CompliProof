@@ -1,5 +1,10 @@
 name: docs-sync
 
+# Branch policy: default branch is `audit/shipment-candidate` (not `main`/`master`).
+# This workflow runs only on a published release and opens a PR — it never commits
+# straight to the default branch. Note: git history is not rewritten here; that
+# requires the owner's explicit G2 authorization.
+#
 # Keep the visitor-facing status block (version, release date, tests, coverage,
 # CI) in README.md / index.html current the moment a release ships. Trigger is
 # release-only — a plain push never touches the docs. Opens a PR for review;

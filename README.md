@@ -5,7 +5,7 @@
 <!-- badges:start -->
 
 ![licence](https://img.shields.io/badge/licence-MIT-blue)
-![local verification](https://img.shields.io/badge/local%20verification-passing-brightgreen)
+![local verification (2026-11-06)](https://img.shields.io/badge/local%20verification-2026--11--06-blue)
 ![CI](https://github.com/Hatemshalaby15071979/CompliProof/actions/workflows/ci.yml/badge.svg)
 
 *Local verification and hosted GitHub Actions are green on the default branch. Seven P0 findings remain open — owner-signed closure evidence has not been recorded.*
