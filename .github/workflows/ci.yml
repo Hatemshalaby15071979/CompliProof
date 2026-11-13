@@ -187,6 +187,20 @@ jobs:
             echo "No hardcoded secrets detected"
           fi
 
+  docs-consistency:
+    name: Version and status consistency
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Check version, Python floor and status claims
+        run: python3 scripts/check_doc_consistency.py
+
   history-scan:
     name: History secret scan
     runs-on: ubuntu-latest
@@ -212,8 +226,8 @@ jobs:
 
   gate:
     name: Release gate
-    needs: [test, install, docker, security, history-scan]
+    needs: [test, install, docker, security, docs-consistency, history-scan]
     runs-on: ubuntu-latest
     steps:
       - run: echo "All CI stages green — CI workflow passed"
-        if: always() && needs.test.result == 'success' && needs.install.result == 'success' && needs.docker.result == 'success' && needs.security.result == 'success' && needs.history-scan.result == 'success'
+        if: always() && needs.test.result == 'success' && needs.install.result == 'success' && needs.docker.result == 'success' && needs.security.result == 'success' && needs.docs-consistency.result == 'success' && needs.history-scan.result == 'success'

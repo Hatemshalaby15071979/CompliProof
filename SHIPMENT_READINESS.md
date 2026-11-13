@@ -120,14 +120,15 @@ Current scan (2026-11-13, fail-closed, required CI gate):
 
 ## Remaining limitations (not waived)
 
-- Hosted GitHub Actions, branch protection, repository visibility, and remote
-  state were **not verified** (no push was made or authorized).
+- Hosted GitHub Actions is verified green on `audit/shipment-candidate`
+  (CI run 42834746842, 2026-11-10). Branch protection, repository visibility,
+  and remote state outside that run were **not verified** from this clone.
 - Actions are tag-pinned, not SHA-pinned.
 - Pre-production gates remain open: authentication recovery/credential
   rotation, independent security review, customer data and operating
   controls, and production deployment acceptance. Local checks use synthetic
   data only and establish reproducible behavior on synthetic inputs.
 
-**Status: locally shipment-ready** for a first push, with hosted-only
-verification and the product gates above still open. Nothing was pushed,
-published, released, or deployed.
+**Status: pushed to GitHub, with hosted CI green on `audit/shipment-candidate`;
+not production-ready.** The hosted-only verification and product gates above
+remain open. Nothing was published, released, or deployed.
