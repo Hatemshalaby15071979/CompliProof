@@ -51,7 +51,10 @@ def _scan(repo: Path, tmp_path: Path) -> tuple[int, dict]:
 
 
 def test_live_shaped_aws_key_fails_the_gate(tmp_path):
-    repo = _repo(tmp_path, "aws_access_key_id = AKIAABCDEFGHIJKLMNOP\n")
+    # Built at runtime so this file never contains a literal key shape that the
+    # scanner would flag in its own history.
+    fake_key = "AKIA" + "ABCDEFGHIJKLMNOP"
+    repo = _repo(tmp_path, f"aws_access_key_id = {fake_key}\n")
     code, report = _scan(repo, tmp_path)
     assert code == 1
     assert report["gate"] == "fail"
