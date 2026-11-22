@@ -16,6 +16,11 @@
 
 </div>
 
+<p float="left">
+  <strong>CompliProof 0.1.0<br></strong><br>
+  <span style="font-size:0.9em;color:#93aaa0">by Helix Solutions</span>
+</p>
+
 ## What is this?
 
 CompliProof compares two CSV exports — say, from two different systems — matches the rows by a shared ID, and shows you clearly what matches, what only exists on one side, and what differs. It then produces a report (HTML, PDF, or CSV) and keeps a tamper-evident local audit trail of everything it did.
