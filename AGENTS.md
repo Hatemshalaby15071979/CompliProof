@@ -54,3 +54,35 @@ Left undone: Nothing at sign-in.
 
 Sensitive: `git push origin audit/shipment-candidate` (owner's instruction in chat,
 2026-11-27). No force push, no history rewrite. No secrets.
+
+## [2026-11-27 05:43 EET] — sami (OpenMausBot), owner-authorised governance landing
+
+STATUS: SIGN-OUT (landing complete)
+
+Task: Bring this repository onto the portfolio governance standard, as the owner approved in
+chat on 2026-11-27. Done.
+
+Touched: `AGENTS.md`, `CHANGELOG.md`, `CONSTITUTION.md`, `GOVERNANCE.md`,
+`scripts/check_root_docs.py` (all new); `docs/archive/` (four dated execution logs moved in,
+their relative links fixed); `REMEDIATION_PLAN.md` (one link now points at the archived log);
+`.github/workflows/ci.yml` (one `governance` job, added to the release gate's `needs`).
+
+Why: The repository had a status-truth check but no written policy for it to follow, no
+charter, no constitution, no changelog and no root-document rule. `SHIPMENT_READINESS.md`,
+`AUDIT_REPORT.md` and `REMEDIATION_PLAN.md` were kept at the root and named in the table
+because the doc-consistency check reads the first two from the root and the README links the
+third — moving them would have broken a live check to satisfy a rule they do not break.
+
+Verification: `python3 scripts/check_root_docs.py` -> "OK -- CompliProof/ holds only the
+GOVERNANCE.md section 2 set" (10 table rows, 10 allowed root documents; `requirements.lock.txt`
+acknowledged as a package manifest, not a document). `--self-test` -> 7/7 cases behaved.
+`python3 scripts/check_doc_consistency.py` -> "Documentation consistency checks passed".
+Full suite in a clean dependency install (`pip install --require-hashes -r
+requirements.lock.txt`) -> 133 passed, 31 skipped, matching the README's stated 31 conditional
+scenario/scale skips.
+
+Left undone: Nothing failing. The published status numbers and the seven open P0 findings are
+untouched; a green CI run is not a shipment decision.
+
+Sensitive: `git push origin audit/shipment-candidate` (owner's instruction in chat,
+2026-11-27). No force push, no history rewrite. No secrets.
