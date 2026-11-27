@@ -5,13 +5,13 @@
 **Readiness: NOT READY for production or customer-data use.** The governing register remains
 **7 open / 0 closed**. This report records engineering work and local checks; it is not an Owner
 sign-off, independent review, customer evidence, or production approval. The updated register is
-[`../company-os/stage-0/P0_REGISTER.yaml`](../company-os/stage-0/P0_REGISTER.yaml).
+[`../company-os/stage-0/P0_REGISTER.yaml`](../../company-os/stage-0/P0_REGISTER.yaml).
 
 All HTTP, account, reconciliation, report, backup, restore, browser, and scale exercises in this
 report used synthetic data. The fixtures `SYN-001` / `SYN-002`, `synthetic-alpha` /
 `synthetic-beta`, and the `synthetic-viewer` / `synthetic-operator` accounts are simulated. No
 customer dataset or service was used. See
-[`evidence/p0-remediation-2026-10-31/`](evidence/p0-remediation-2026-10-31/) for captured logs,
+[`evidence/p0-remediation-2026-10-31/`](../evidence/p0-remediation-2026-10-31/) for captured logs,
 wheel, manifest, hashes, scanner output, and supplemental browser/scale results.
 
 ## Changes made
@@ -137,12 +137,12 @@ container, and then recorded 429 for that same synthetic account; see `lockout-r
 The integrated-browser smoke used an isolated temporary workspace and a synthetic viewer. It
 verified the sign-in form, successful login, simulated-data banner, finance/pipeline restrictions,
 logout, and HTTP 401 from `/api/auth/me` after logout. The captured summary is
-[`dashboard-browser-smoke.txt`](evidence/p0-remediation-2026-10-31/dashboard-browser-smoke.txt).
+[`dashboard-browser-smoke.txt`](../evidence/p0-remediation-2026-10-31/dashboard-browser-smoke.txt).
 This is not role-by-role browser acceptance.
 
 A separate bounded synthetic scale run reconciled 20,000 rows per input in 0.938 seconds with
 24.99 MiB peak traced Python allocations; the chain verified successfully. Its output is
-[`scale-20k.log`](evidence/p0-remediation-2026-10-31/scale-20k.log). This does not establish a
+[`scale-20k.log`](../evidence/p0-remediation-2026-10-31/scale-20k.log). This does not establish a
 production file-size limit or capacity guarantee.
 
 ### Backup and restore

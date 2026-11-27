@@ -233,8 +233,24 @@ jobs:
 
   gate:
     name: Release gate
-    needs: [test, install, docker, security, docs-consistency, history-scan]
+    needs: [test, install, docker, security, docs-consistency, history-scan, governance]
     runs-on: ubuntu-latest
     steps:
       - run: echo "All CI stages green — CI workflow passed"
-        if: always() && needs.test.result == 'success' && needs.install.result == 'success' && needs.docker.result == 'success' && needs.security.result == 'success' && needs.docs-consistency.result == 'success' && needs.history-scan.result == 'success'
+        if: always() && needs.test.result == 'success' && needs.install.result == 'success' && needs.docker.result == 'success' && needs.security.result == 'success' && needs.docs-consistency.result == 'success' && needs.history-scan.result == 'success' && needs.governance.result == 'success'
+
+  governance:
+    name: Root-document gate
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Root-document gate (GOVERNANCE.md section 2)
+        run: |
+          python3 scripts/check_root_docs.py
+          python3 scripts/check_root_docs.py --self-test

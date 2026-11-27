@@ -31,7 +31,7 @@ not customer-market evidence. Do not label them otherwise.
 
 These are not formal P0 closures. The authoritative register remains at **7 open / 0 closed**.
 Exact commands, results, synthetic-data labels, and negative recovery findings are in
-[`P0_REMEDIATION_EXECUTION_2026-10-31.md`](./P0_REMEDIATION_EXECUTION_2026-10-31.md) and the
+[`P0_REMEDIATION_EXECUTION_2026-10-31.md`](./docs/archive/P0_REMEDIATION_EXECUTION_2026-10-31.md) and the
 attached evidence directory.
 
 ## Required verification sequence

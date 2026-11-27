@@ -36,7 +36,7 @@ were test defects, not evidence that the underlying reconciliation product
 passed a release gate.
 
 Detailed captured logs and their hashes are in
-[`evidence/production-readiness-2026-11-04/`](evidence/production-readiness-2026-11-04/).
+[`evidence/production-readiness-2026-11-04/`](../evidence/production-readiness-2026-11-04/).
 The test environment and temporary synthetic artifacts were removed after
 verification.
 
